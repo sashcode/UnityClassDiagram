@@ -4,12 +4,12 @@ using System.Collections;
 
 public class ClassDiagramEditor: EditorWindow
 {
-	Texture2D texAdd = loadTexture ("UnityClassDiagram/icons/add.png");
-	Texture2D texRemove = loadTexture ("UnityClassDiagram/icons/remove.png");
-	Texture2D texRemoveMini = loadTexture ("UnityClassDiagram/icons/removeMini.png");
-	Texture2D texSuper = loadTexture ("UnityClassDiagram/icons/super.png");
-	Texture2D texNoImage = loadTexture ("UnityClassDiagram/icons/no_image.png");
-	Texture2D texNoImage16 = loadTexture ("UnityClassDiagram/icons/no_image16.png");
+	Texture2D texAdd = loadTexture ("UnityClassDiagram/src/UnityClassDiagram/icons/add.png");
+	Texture2D texRemove = loadTexture ("UnityClassDiagram/src/UnityClassDiagram/icons/remove.png");
+	Texture2D texRemoveMini = loadTexture ("UnityClassDiagram/src/UnityClassDiagram/icons/removeMini.png");
+	Texture2D texSuper = loadTexture ("UnityClassDiagram/src/UnityClassDiagram/icons/super.png");
+	Texture2D texNoImage = loadTexture ("UnityClassDiagram/src/UnityClassDiagram/icons/no_image.png");
+	Texture2D texNoImage16 = loadTexture ("UnityClassDiagram/src/UnityClassDiagram/icons/no_image16.png");
 	
 	public static Texture2D loadTexture (string relativePath)
 	{
