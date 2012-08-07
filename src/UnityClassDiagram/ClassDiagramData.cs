@@ -19,6 +19,7 @@ public class ClassDiagramData : MonoBehaviour
 public class Class : DiagramNode
 {
 	public string name;
+	public string iconPath;
 	public Attribute[] attributes = new Attribute[0];
 	public string superClassName = "";
 	public Reference[] references = new Reference[0];
@@ -27,6 +28,7 @@ public class Class : DiagramNode
 	public Class ()
 	{
 		name = "class name";
+		iconPath = "Assets/UnityClassDiagram/icons/sword.png";
 	}
 
 	public Class GetSuperClass (ClassDiagramData data)
@@ -69,12 +71,13 @@ public class CompositeReference
 public class Attribute
 {
 	public string name = "name";
-	public string type = "type";
+	public string type = "int";
+	public string iconPath;
 }
 
 [System.Serializable]
 public class DiagramNode
 {
-	public Rect rect = new Rect (50, 100, 150, 100);
+	public Rect rect = new Rect (50, 100, 180, 30);
 	
 }
