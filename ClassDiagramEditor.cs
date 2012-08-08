@@ -13,7 +13,7 @@ public class ClassDiagramEditor: EditorWindow
 	
 	public static Texture2D loadTexture (string relativePath)
 	{
-		return (Texture2D)AssetDatabase.LoadAssetAtPath ("Assets/" + relativePath, typeof(Texture2D));
+		return (Texture2D)AssetDatabase.LoadAssetAtPath (Config.PATH + relativePath, typeof(Texture2D));
 	}
 	
 	public ClassDiagramEditor ()
@@ -24,12 +24,18 @@ public class ClassDiagramEditor: EditorWindow
 	static ClassDiagramEditor window = null;
 	Color s = new Color (0.4f, 0.4f, 0.5f);
 	
+	void OnSelectionChange ()
+	{
+		
+		
+	}
+		
 	[MenuItem("Assets/Create/ClassDiagram")]
 	static void Create ()
 	{     
 		GameObject gameObject = new GameObject ();
 		gameObject.AddComponent ("ClassDiagramData");
-		PrefabUtility.CreatePrefab ("Assets/MyObject.prefab", gameObject);
+		PrefabUtility.CreatePrefab ("Assets/ClassDiagram.prefab", gameObject);
 		
 		
 		init ();
@@ -58,13 +64,13 @@ public class ClassDiagramEditor: EditorWindow
 	}
 
 	private ClassDiagramData cuurentClassData;
-	int focusWidowId = -1;
-	Class focusClass = null;
-	int mode = 0;
-	int mode_draw = 0;
-	int mode_ref = 1;
-	Class refModeClass = null;
-	Class refModeTargetClass = null;
+	private int focusWidowId = -1;
+	private Class focusClass = null;
+	private int mode = 0;
+	private int mode_draw = 0;
+	private int mode_ref = 1;
+	private Class refModeClass = null;
+	private Class refModeTargetClass = null;
 	
 	void drawWindow (int id)
 	{
@@ -99,14 +105,10 @@ public class ClassDiagramEditor: EditorWindow
 		if (GUI.Button (iconRect, "", iconStyle)) {
 			string path = EditorUtility.OpenFilePanel ("Select Icon", "Assets", "");
 			if (path != null) {
-				Debug.Log (path);
-				Debug.Log (Application.dataPath);
 				if (Application.dataPath.Length < path.Length) {
 					path = path.Substring (Application.dataPath.Length);
-					Debug.Log (path);
 					char[] chTrims = {'/', '\\'};
 					path = path.TrimStart (chTrims);
-					Debug.Log (path);
 					clazz.iconPath = path;
 				}
 			}
@@ -127,8 +129,9 @@ public class ClassDiagramEditor: EditorWindow
 			style.normal.background = texSuper;
 			Rect btnRect = new Rect (0, 0, 16, 16);
 			if (GUI.Button (btnRect, "", style)) {
-				mode = mode_ref;
-				refModeClass = clazz;
+					clazz.superClassName = null;
+					mode = mode_ref;
+					refModeClass = clazz;				
 			}
 			style.normal.background = texAdd;
 			btnRect.x += 18;
@@ -146,11 +149,6 @@ public class ClassDiagramEditor: EditorWindow
 				cuurentClassData.classes = classList.ToArray ();
 			}
 		}
-		
-		//if(focusWidowId == id){
-		
-		//}
-		
 		
 		
 		for (int index = 0; index < clazz.attributes.Length; index++) {
@@ -232,14 +230,30 @@ public class ClassDiagramEditor: EditorWindow
 	
 	void OnGUI ()
 	{
+		Event e = Event.current;
+        switch (e.type)
+        {
+            case EventType.keyDown:
+                {
+                     if(mode == mode_ref){
+				mode = mode_draw;
+				refModeClass = null;
+				refModeTargetClass = null;
+				
+			}
+                    break;
+                }
+        }
 		
 		GameObject gameObject = Selection.activeGameObject;
 		if (!gameObject) {
+			GUI.Label (new Rect (20, 20, 300, 100), "ClassDiagramData is not found.");
 			return;
 		}
 			
 		ClassDiagramData classData = gameObject.GetComponent<ClassDiagramData> ();
 		if (!classData) {
+			GUI.Label (new Rect (20, 20, 300, 100), "Select ClassDiagramData.");
 			return;
 		}
 		
@@ -330,31 +344,62 @@ public class ClassDiagramEditor: EditorWindow
 			if (clazz.superClassName != null) {
 				Class target = clazz.GetSuperClass (cuurentClassData);
 				if (target != null) {
-					curveFromTo (clazz.rect, target.rect, new Color (0.3f, 0.7f, 0.4f), s);
+					drawLine (new Rect (clazz.rect.x, clazz.rect.y + 16, clazz.rect.width, clazz.rect.height - 16)
+						, new Rect (target.rect.x, target.rect.y + 16, target.rect.width, target.rect.height - 16), new Color (0.3f, 0.4f, 0.7f));
 				}
 			}
 		}
 		EndWindows ();
 		
 		if (mode == mode_ref) {
+			Vector2 mouse = Event.current.mousePosition;
+			drawLine (new Rect (refModeClass.rect.x, refModeClass.rect.y + 16, refModeClass.rect.width, refModeClass.rect.height - 16)
+						, new Rect (mouse.x, mouse.y, 5, 5), new Color (0.3f, 0.4f, 0.7f));
+			
 			if (refModeTargetClass != null) {
 				refModeClass.superClassName = refModeTargetClass.name;
 				
 				mode = mode_draw;
+				refModeClass = null;
 				refModeTargetClass = null;
 			}
 		}
 		
 	}
 	
-	void curveFromTo (Rect wr, Rect wr2, Color color, Color shadow)
+	public static Texture2D lineTex = null;
+	
+	void drawLine (Rect wr, Rect wr2, Color color)
 	{
+		Vector2 pointA = new Vector2 (wr.x + wr.width / 2, wr.y + wr.height / 2);
+		Vector2 pointB = new Vector2 (wr2.x + wr2.width / 2, wr2.y + wr2.height / 2);
+		float width = 2;
+			
+		Color savedColor = GUI.color;
+		Matrix4x4 savedMatrix = GUI.matrix;
+        
+		width *= 3;
+		if (!lineTex) {
+			lineTex = new Texture2D (1, 3, TextureFormat.ARGB32, true);
+			lineTex.SetPixel (0, 0, new Color (1, 1, 1, 0));
+			lineTex.SetPixel (0, 1, Color.white);
+			lineTex.SetPixel (0, 2, new Color (1, 1, 1, 0));
+			lineTex.Apply ();
+		}
+		float angle = Vector3.Angle (pointB - pointA, Vector2.right) * (pointA.y <= pointB.y ? 1 : -1);
+		//Debug.Log (" a=" + pointA + " b=" + pointB + " A=" + angle);
+		float dx = pointB.x - pointA.x;
+		float dy = pointB.y - pointA.y;
+		float length = Mathf.Sqrt (dx * dx + dy * dy);
+		GUI.color = color;
+		GUI.matrix = Matrix4x4.TRS (new Vector3 (pointA.x, pointA.y, 0), Quaternion.identity, Vector3.one);
+		GUIUtility.RotateAroundPivot (angle, pointA);
+		GUI.DrawTexture (new Rect (0, 0, length, 1), lineTex);
 		
-		Drawing.bezierLine (
-            new Vector2 (wr.x + wr.width, wr.y + wr.height / 2),
-            new Vector2 (wr.x + wr.width + Mathf.Abs (wr2.x - (wr.x + wr.width)) / 2, wr.y + wr.height / 2),
-            new Vector2 (wr2.x, wr2.y + wr2.height / 2),
-            new Vector2 (wr2.x - Mathf.Abs (wr2.x - (wr.x + wr.width)) / 2, wr2.y + wr2.height / 2), color, 2, true, 20);
+		GUI.matrix = savedMatrix;
+		GUI.color = savedColor;
 	}
+	
+
 	
 }
