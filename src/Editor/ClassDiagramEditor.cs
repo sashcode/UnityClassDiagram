@@ -13,7 +13,7 @@ public class ClassDiagramEditor: EditorWindow
 	
 	public static Texture2D loadTexture (string relativePath)
 	{
-		return (Texture2D)AssetDatabase.LoadAssetAtPath ("Assets/" + relativePath, typeof(Texture2D));
+		return (Texture2D)AssetDatabase.LoadAssetAtPath ("Assets/SimpleData/" + relativePath, typeof(Texture2D));
 	}
 	
 	public ClassDiagramEditor ()
