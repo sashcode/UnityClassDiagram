@@ -11,6 +11,9 @@ public class ClassDiagramEditor: EditorWindow
 	Texture2D texNoImage = loadTexture ("UnityClassDiagram/src/UnityClassDiagram/icons/no_image.png");
 	Texture2D texNoImage16 = loadTexture ("UnityClassDiagram/src/UnityClassDiagram/icons/no_image16.png");
 	
+	string[] types = {"int", "float", "string", "bool", "Color", "Vector2", "Vector3", "Vector4", "AnimationCurve",
+						"Rect", "Texture", "Texture2D", "Object"};
+	
 	public static Texture2D loadTexture (string relativePath)
 	{
 		return (Texture2D)AssetDatabase.LoadAssetAtPath ("Assets/SimpleData/" + relativePath, typeof(Texture2D));
@@ -193,7 +196,7 @@ public class ClassDiagramEditor: EditorWindow
 			if (id == focusWidowId) {
 				attr.name = GUI.TextField (nrect, attr.name);
 				GUI.Label (crect, ":");
-				attr.type = GUI.TextField (trect, attr.type);
+				attr.type = DrawTypeField(attr.type, trect);
 			} else {
 				GUI.Label (nrect, attr.name);
 				GUI.Label (crect, ":");
@@ -228,6 +231,17 @@ public class ClassDiagramEditor: EditorWindow
 		
 		
 		GUI.DragWindow ();
+	}
+	
+	string DrawTypeField(string type, Rect rect) {
+		for(int i = 0; i < types.Length; i++) {
+			if(types[i] == type) {
+				int selection = EditorGUI.Popup(rect, i, types);
+				return types[selection];
+			}
+		}
+		
+		return null;
 	}
 	
 	void OnGUI ()
