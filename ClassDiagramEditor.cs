@@ -129,9 +129,12 @@ public class ClassDiagramEditor: EditorWindow
 			style.normal.background = texSuper;
 			Rect btnRect = new Rect (0, 0, 16, 16);
 			if (GUI.Button (btnRect, "", style)) {
+				if (clazz.superClassName != null) {
 					clazz.superClassName = null;
+				} else {
 					mode = mode_ref;
-					refModeClass = clazz;				
+					refModeClass = clazz;
+				}
 			}
 			style.normal.background = texAdd;
 			btnRect.x += 18;
@@ -198,10 +201,6 @@ public class ClassDiagramEditor: EditorWindow
 				GUI.Label (trect, attr.type);
 			}
 			
-
-			
-			
-			
 			
 			if (id == focusWidowId) {
 				
@@ -231,19 +230,20 @@ public class ClassDiagramEditor: EditorWindow
 	void OnGUI ()
 	{
 		Event e = Event.current;
-        switch (e.type)
-        {
-            case EventType.keyDown:
-                {
-                     if(mode == mode_ref){
-				mode = mode_draw;
-				refModeClass = null;
-				refModeTargetClass = null;
-				
+		switch (e.type) {
+		case EventType.keyDown:
+			{
+				if (mode == mode_ref) {
+					mode = mode_draw;
+					if (refModeClass != null) {
+						refModeClass.superClassName = null;
+					}
+					refModeClass = null;
+					refModeTargetClass = null;
+				}
+				break;
 			}
-                    break;
-                }
-        }
+		}
 		
 		GameObject gameObject = Selection.activeGameObject;
 		if (!gameObject) {
@@ -343,9 +343,15 @@ public class ClassDiagramEditor: EditorWindow
 			
 			if (clazz.superClassName != null) {
 				Class target = clazz.GetSuperClass (cuurentClassData);
+				Rect clazzRect = new Rect (clazz.rect.x, clazz.rect.y + 16, clazz.rect.width, clazz.rect.height - 16) ;
 				if (target != null) {
-					drawLine (new Rect (clazz.rect.x, clazz.rect.y + 16, clazz.rect.width, clazz.rect.height - 16)
+					drawLine (clazzRect
 						, new Rect (target.rect.x, target.rect.y + 16, target.rect.width, target.rect.height - 16), new Color (0.3f, 0.4f, 0.7f));
+				}else{
+				if(clazz.superClassName != null && 0 < clazz.superClassName.Length ){
+						drawLine (clazzRect
+						, new Rect (clazzRect.x, clazzRect.y - 50, clazzRect.width, clazzRect.height), new Color (0.3f, 0.4f, 0.7f));
+					}
 				}
 			}
 		}

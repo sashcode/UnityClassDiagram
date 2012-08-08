@@ -21,7 +21,7 @@ public class Class : DiagramNode
 	public string name;
 	public string iconPath;
 	public Attribute[] attributes = new Attribute[0];
-	public string superClassName = "";
+	public string superClassName = null;
 	public Reference[] references = new Reference[0];
 	public CompositeReference[] compositeReferences;
 
@@ -35,7 +35,7 @@ public class Class : DiagramNode
 	{
 		for (int index = 0; index < data.classes.Length; index++) {
 			Class clazz = (Class)data.classes.GetValue (index);
-			if (clazz.name == superClassName) {
+			if (clazz.name != null && 0 < clazz.name.Length && clazz.name == superClassName) {
 				return clazz;
 			}
 		}
