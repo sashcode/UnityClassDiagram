@@ -3,6 +3,6 @@ using System.Collections;
 
 public class Config
 {
-	public static string PATH = "Assets/";
-	//public static string PATH = "Assets/SimpleData/";
+	public static string INSTALLED_PATH = "Assets/";
+	//public static string INSTALLED_PATH = "Assets/SimpleData/";
 }

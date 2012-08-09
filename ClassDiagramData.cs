@@ -6,12 +6,14 @@ public class ClassDiagramData : MonoBehaviour
 {
 	public string diagramName;
 	public Class[] classes;
-
+	public string[] types ;
+	
 	public ClassDiagramData ()
 	{
 		classes = new Class [1];
 		classes [0] = new Class ();
 		diagramName = "diagram name";
+		types = new string[]{"int", "float", "string", "bool", "Color", "Vector2", "Vector3", "Vector4", "AnimationCurve","Rect", "Texture", "Texture2D", "Object"};
 	}
 }
 
@@ -19,16 +21,17 @@ public class ClassDiagramData : MonoBehaviour
 public class Class : DiagramNode
 {
 	public string name;
+	public string guid;
 	public string iconPath;
 	public Attribute[] attributes = new Attribute[0];
 	public string superClassName = null;
 	public Reference[] references = new Reference[0];
 	public CompositeReference[] compositeReferences;
-
+	 
 	public Class ()
 	{
 		name = "class name";
-		iconPath = "Assets/UnityClassDiagram/icons/sword.png";
+		guid = System.Guid.NewGuid ().ToString ("N");
 	}
 
 	public Class GetSuperClass (ClassDiagramData data)
