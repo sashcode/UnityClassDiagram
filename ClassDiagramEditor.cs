@@ -460,8 +460,7 @@ public class ClassDiagramEditor: EditorWindow
 		
 		GUI.DrawTexture (new Rect (0, 0, length, 1), lineTex);
 		
-		Vector2 arrowPos1 = new Vector2 ();
-		Vector2 arrowPos2 = new Vector2 ();
+		Vector2 arrowPos = new Vector2 ();
 		
 		
 		
@@ -480,103 +479,52 @@ public class ClassDiagramEditor: EditorWindow
 		float ans1 = calcPosition (topLeft, bottomRight, pointA);
 		float ans2 = calcPosition (bottomLeft, topRight, pointA);
 		
-		float pos = 0;
-		if (0 <= ans1 && 0 <= ans2) {
-			//Debug.Log("bottom");
-			pos = 1;
-		} else if (0 > ans1 && 0 <= ans2) {
-			//Debug.Log("right");
-			pos = 2;
-		} else if (0 <= ans1 && 0 > ans2) {
-			//Debug.Log("left");
-			pos = 3;
-		} else if (0 > ans1 && 0 > ans2) {
-			//Debug.Log("top");
-			pos = 4;
-		}
-		
 		if (mouse) {
-			arrowPos1.x = pointB.x;
-			arrowPos1.y = pointB.y;
-			arrowPos2.x = pointB.x;
-			arrowPos2.y = pointB.y;
-			if (pos == 1) {
-				//Debug.Log("bottom");
-				pos = 1;
-				
-			} else if (pos == 2) {
-				//Debug.Log("right");
-				pos = 2;
-			} else if (pos == 3) {
-				//Debug.Log("left");
-				pos = 3;
-			} else if (pos == 4) {
-				//Debug.Log("top");
-				pos = 4;
-			}
+			arrowPos.x = pointB.x;
+			arrowPos.y = pointB.y;
 		} else {
-		
-			
-			
 			if (0 <= ans1 && 0 <= ans2) {
 				//Debug.Log("bottom");
 				float w1 = Mathf.Abs (pointB.y - pointA.y);
 				float w2 = Mathf.Abs (pointB.y - bottom);
 				float h1 = pointB.x - pointA.x;
 				float h2 = h1 * w2 / w1;
-				arrowPos1.y = bottom;
-				arrowPos1.x = pointB.x - h2;
-				arrowPos2.x = arrowPos1.x + 1;
-				arrowPos2.y = arrowPos1.y;
-			
+				arrowPos.y = bottom;
+				arrowPos.x = pointB.x - h2;			
 			} else if (0 > ans1 && 0 <= ans2) {
 				//Debug.Log("right");
 				float w1 = Mathf.Abs (pointB.x - pointA.x);
 				float w2 = Mathf.Abs (pointB.x - right);
 				float h1 = pointB.y - pointA.y;
 				float h2 = h1 * w2 / w1;
-				arrowPos1.x = right;
-				arrowPos1.y = pointB.y - h2;
-				arrowPos2.x = arrowPos1.x;
-				arrowPos2.y = arrowPos1.y - 1;
+				arrowPos.x = right;
+				arrowPos.y = pointB.y - h2;
 			} else if (0 <= ans1 && 0 > ans2) {
 				//Debug.Log("left");
 				float w1 = Mathf.Abs (pointB.x - pointA.x);
 				float w2 = Mathf.Abs (pointB.x - left);
 				float h1 = pointB.y - pointA.y;
 				float h2 = h1 * w2 / w1;
-				arrowPos1.x = left;
-				arrowPos1.y = pointB.y - h2;
-				arrowPos2.x = arrowPos1.x;
-				arrowPos2.y = arrowPos1.y + 1;
+				arrowPos.x = left;
+				arrowPos.y = pointB.y - h2;
 			} else if (0 > ans1 && 0 > ans2) {
 				//Debug.Log("top");
 				float w1 = Mathf.Abs (pointB.y - pointA.y);
 				float w2 = Mathf.Abs (pointB.y - top);
 				float h1 = pointB.x - pointA.x;
 				float h2 = h1 * w2 / w1;
-				arrowPos1.y = top;
-				arrowPos1.x = pointB.x - h2;
-				arrowPos2.x = arrowPos1.x - 1;
-				arrowPos2.y = arrowPos1.y;
+				arrowPos.y = top;
+				arrowPos.x = pointB.x - h2;
 			}
 		}
 		
-	
-		//GUI.matrix.SetTRS(vec, Quaternion.identity, Vector3.one);
-		//arrowPos.x -= 6;
-		//GUI.matrix = Matrix4x4.TRS (arrowPos, Quaternion.identity, Vector3.one);
-		//GUIUtility.RotateAroundPivot (angle + 90, arrowPos);
-		//GUI.DrawTexture (new Rect (0, 0, 12, 12), texTriangle);
-		
-		
-		GUI.matrix = Matrix4x4.TRS (arrowPos2, Quaternion.identity, Vector3.one);
-		GUIUtility.RotateAroundPivot (angle + 150, arrowPos2);
-		GUI.DrawTexture (new Rect (0, 0, 10, 1), lineTex);
-		
-		GUI.matrix = Matrix4x4.TRS (arrowPos1, Quaternion.identity, Vector3.one);
-		GUIUtility.RotateAroundPivot (angle - 150, arrowPos1);
-		GUI.DrawTexture (new Rect (0, 0, 10, 1), lineTex);
+		GUI.color = savedColor;
+		Vector2 arrowPivot = new Vector2(arrowPos.x , arrowPos.y);
+		arrowPos.x -= 16;
+		arrowPos.y -= 8;
+		GUI.matrix = Matrix4x4.TRS (arrowPos, Quaternion.identity, Vector3.one);
+		GUIUtility.RotateAroundPivot (angle, arrowPivot);
+		GUI.DrawTexture (new Rect (0, 0, 16, 16), texTriangle);
 		
 		GUI.matrix = savedMatrix;
 		GUI.color = savedColor;
