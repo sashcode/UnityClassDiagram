@@ -24,8 +24,8 @@ public class ClassDiagramEditor: EditorWindow
 
 	private void changeModeDraw ()
 	{
-		Debug.Log ("changeModeDraw");
 		wantsMouseMove = false;
+		Debug.Log ("changeModeDraw" + " wantsMouseMove=" + wantsMouseMove);
 		refModeClass = null;
 		refModeTargetClass = null;
 		mode = mode_draw;
@@ -33,28 +33,17 @@ public class ClassDiagramEditor: EditorWindow
 
 	private void changeModeRef (Class clazz)
 	{
-		Debug.Log ("changeModeRef");
 		wantsMouseMove = true;
+		Debug.Log ("changeModeRef" + " wantsMouseMove=" + wantsMouseMove);
 		refModeClass = clazz;
 		mode = mode_ref;
 	}
-	
-	public void OnInspectorUpdate ()
-	{
-		Repaint ();
-	}
-	
+		
 	static ClassDiagramEditor window = null;
 	
 	void OnSelectionChange ()
 	{
-		
-		
-	}
-	
-	public void Update ()
-	{
-		//Debug.Log("update");
+		Repaint ();
 	}
 		
 	[MenuItem("Assets/Create/ClassDiagram")]
@@ -291,6 +280,11 @@ public class ClassDiagramEditor: EditorWindow
 				}
 				break;
 			}
+		case EventType.MouseMove:
+			{
+				Repaint ();
+				break;
+			}
 		}
 		
 		GameObject gameObject = Selection.activeGameObject;
@@ -519,7 +513,7 @@ public class ClassDiagramEditor: EditorWindow
 		}
 		
 		GUI.color = savedColor;
-		Vector2 arrowPivot = new Vector2(arrowPos.x , arrowPos.y);
+		Vector2 arrowPivot = new Vector2 (arrowPos.x, arrowPos.y);
 		arrowPos.x -= 16;
 		arrowPos.y -= 8;
 		GUI.matrix = Matrix4x4.TRS (arrowPos, Quaternion.identity, Vector3.one);
