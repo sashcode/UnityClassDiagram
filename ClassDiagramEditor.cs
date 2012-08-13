@@ -4,14 +4,27 @@ using System.Collections;
 
 public class ClassDiagramEditor: EditorWindow
 {
-	Texture2D texAdd = loadTexture ("UnityClassDiagram/icons/add.png");
-	Texture2D texRemove = loadTexture ("UnityClassDiagram/icons/remove.png");
-	Texture2D texRemoveMini = loadTexture ("UnityClassDiagram/icons/removeMini.png");
-	Texture2D texSuper = loadTexture ("UnityClassDiagram/icons/super.png");
-	Texture2D texNoImage = loadTexture ("UnityClassDiagram/icons/no_image.png");
-	Texture2D texNoImage16 = loadTexture ("UnityClassDiagram/icons/no_image16.png");
-	Texture2D texTriangle = loadTexture ("UnityClassDiagram/icons/triangle.png");
-    
+	private Texture2D texAdd = loadTexture ("UnityClassDiagram/icons/add.png");
+	private Texture2D texRemove = loadTexture ("UnityClassDiagram/icons/remove.png");
+	private Texture2D texRemoveMini = loadTexture ("UnityClassDiagram/icons/removeMini.png");
+	private Texture2D texSuper = loadTexture ("UnityClassDiagram/icons/super.png");
+	private Texture2D texNoImage = loadTexture ("UnityClassDiagram/icons/no_image.png");
+	private Texture2D texNoImage16 = loadTexture ("UnityClassDiagram/icons/no_image16.png");
+	private Texture2D texTriangle = loadTexture ("UnityClassDiagram/icons/triangle.png");
+	private Texture2D texComposite = loadTexture ("UnityClassDiagram/icons/composite.png");
+	private Texture2D texReference = loadTexture ("UnityClassDiagram/icons/reference.png");
+	private Texture2D lineTex = null;
+	private ClassDiagramData cuurentClassData;
+	private Class focusClass = null;
+	private Class refModeClass = null;
+	private Class refModeTargetClass = null;
+	private int focusWidowId = -1;
+	private int mode = 0;
+	private const int mode_draw = 0;
+	private const int mode_ref_gen = 1;
+	private const int mode_ref_ref = 2;
+	private const int mode_ref_com = 3;
+	
 	public static Texture2D loadTexture (string relativePath)
 	{
 		return (Texture2D)AssetDatabase.LoadAssetAtPath (Config.INSTALLED_PATH + relativePath, typeof(Texture2D));
@@ -31,12 +44,12 @@ public class ClassDiagramEditor: EditorWindow
 		mode = mode_draw;
 	}
 
-	private void changeModeRef (Class clazz)
+	private void changeModeRef (Class clazz, int refType)
 	{
 		wantsMouseMove = true;
 		Debug.Log ("changeModeRef" + " wantsMouseMove=" + wantsMouseMove);
 		refModeClass = clazz;
-		mode = mode_ref;
+		mode = refType;
 	}
 		
 	static ClassDiagramEditor window = null;
@@ -83,15 +96,6 @@ public class ClassDiagramEditor: EditorWindow
 			window = EditorWindow.GetWindow<ClassDiagramEditor> ();
 		}
 	}
-
-	private ClassDiagramData cuurentClassData;
-	private int focusWidowId = -1;
-	private Class focusClass = null;
-	private int mode = 0;
-	private int mode_draw = 0;
-	private int mode_ref = 1;
-	private Class refModeClass = null;
-	private Class refModeTargetClass = null;
 	
 	void drawWindow (int id)
 	{
@@ -103,7 +107,7 @@ public class ClassDiagramEditor: EditorWindow
 		
 		if ((Event.current.button == 0) && (Event.current.type == EventType.MouseDown)) {
 			focusWidowId = id;
-			if (mode == mode_ref) {
+			if (mode != mode_draw) {
 				if (refModeClass != null && refModeClass != clazz) {
 					refModeTargetClass = clazz;
 				}
@@ -153,8 +157,18 @@ public class ClassDiagramEditor: EditorWindow
 				if (clazz.superClassName != null && 0 < clazz.superClassName.Length) {
 					clazz.superClassName = null;
 				} else {
-					changeModeRef (clazz);
+					changeModeRef (clazz, mode_ref_gen);
 				}
+			}
+			style.normal.background = texComposite;
+			btnRect.x += 18;
+			if (GUI.Button (btnRect, "", style)) {
+				changeModeRef (clazz, mode_ref_com);
+			}
+			style.normal.background = texReference;
+			btnRect.x += 18;
+			if (GUI.Button (btnRect, "", style)) {
+				changeModeRef (clazz, mode_ref_ref);
 			}
 			style.normal.background = texAdd;
 			btnRect.x += 18;
@@ -163,6 +177,7 @@ public class ClassDiagramEditor: EditorWindow
 				attrList.Add (new Attribute ());
 				clazz.attributes = attrList.ToArray ();	
 			}
+			
 			style.normal.background = texRemove;
 			btnRect.x = bx;
 			btnRect.y = 0;
@@ -176,7 +191,6 @@ public class ClassDiagramEditor: EditorWindow
 		
 		for (int index = 0; index < clazz.attributes.Length; index++) {
 			Attribute attr = (Attribute)clazz.attributes.GetValue (index);
-			float width = clazz.rect.width;
 			float nwidth = 50;
 			float twidth = 90;
 			float y = 60 + 18 * index;
@@ -189,7 +203,6 @@ public class ClassDiagramEditor: EditorWindow
 			
 			texIcon = null;
 			string attrIconPath = attr.iconPath;
-			Texture2D attrTexIcon = null;
 			if (attrIconPath != null) {
 				texIcon = loadTexture (attrIconPath);
 			}
@@ -275,7 +288,7 @@ public class ClassDiagramEditor: EditorWindow
 		switch (e.type) {
 		case EventType.keyDown:
 			{
-				if (mode == mode_ref) {
+				if (mode != mode_draw) {
 					changeModeDraw ();
 				}
 				break;
@@ -308,10 +321,6 @@ public class ClassDiagramEditor: EditorWindow
 		}
 		
 		cuurentClassData = classData;
-		
-		int focusWindowId_old = focusWidowId;
-		Class focusWindowClass_old = focusClass;
-		
 		
 		if (mode == mode_draw) {
 			if ((Event.current.button == 0) && (Event.current.type == EventType.MouseDown)) {
@@ -396,37 +405,141 @@ public class ClassDiagramEditor: EditorWindow
 				Rect clazzRect = new Rect (clazz.rect.x, clazz.rect.y + 16, clazz.rect.width, clazz.rect.height - 16);
 				if (target != null) {
 					drawLine (clazzRect
-						, new Rect (target.rect.x, target.rect.y + 16, target.rect.width, target.rect.height - 16), new Color (0.3f, 0.4f, 0.7f), false);
+						, new Rect (target.rect.x, target.rect.y + 16, target.rect.width, target.rect.height - 16), new Color (0.3f, 0.4f, 0.7f), false, null, texTriangle);
 				} else {
 					if (clazz.superClassName != null && 0 < clazz.superClassName.Length) {
 						drawLine (clazzRect
-						, new Rect (clazzRect.x, clazzRect.y - 50, clazzRect.width, clazzRect.height), new Color (0.3f, 0.4f, 0.7f), true);
+						, new Rect (clazzRect.x, clazzRect.y - 50, clazzRect.width, clazzRect.height), new Color (0.3f, 0.4f, 0.7f), true, null, texTriangle);
 					}
 				}
 			}
 		}
 		EndWindows ();
 		
-		if (mode == mode_ref) {
+		if (mode != mode_draw) {
 			Vector2 mouse = Event.current.mousePosition;
 			drawLine (new Rect (refModeClass.rect.x, refModeClass.rect.y + 16, refModeClass.rect.width, refModeClass.rect.height - 16)
-						, new Rect (mouse.x - 5, mouse.y - 5, 5, 5), new Color (0.3f, 0.4f, 0.7f), true);
+						, new Rect (mouse.x - 5, mouse.y - 5, 5, 5), new Color (0.3f, 0.4f, 0.7f), true, GetSrcAnchorTex (), GetDestAnchorTex ());
 			
 			
 			if (refModeTargetClass != null) {
-				refModeClass.superClassName = refModeTargetClass.name;
+				switch (mode) {
+				case mode_ref_gen:{
+						refModeClass.superClassName = refModeTargetClass.name;
+						break;
+					}
+				case mode_ref_com:{
+						break;
+					}
+				case mode_ref_ref:{
+						break;
+					}
+				}
+				
 				changeModeDraw ();
 			}
 		}
 		
 	}
 	
-	public static Texture2D lineTex = null;
+	Texture2D GetSrcAnchorTex ()
+	{
+		
+		switch (mode) {
+		case mode_ref_gen:{
+				return null;
+			}
+		case mode_ref_com:{
+				return texComposite;
+			}
+		case mode_ref_ref:{
+				return null;
+			}
+		}
+		return null;
+		
+	}
+
+	Texture2D GetDestAnchorTex ()
+	{
+		
+		switch (mode) {
+		case mode_ref_gen:{
+				return texTriangle;
+			}
+		case mode_ref_com:{
+				return null;
+			}
+		case mode_ref_ref:{
+				return texReference;
+			}
+		}
+		return null;
+	}
 	
-	void drawLine (Rect wr, Rect wr2, Color color, bool mouse)
+	Vector2 GetAnchorPos (Vector2 pointA, Rect wr2)
+	{
+		Vector2 pointB = new Vector2 (wr2.x + wr2.width / 2, wr2.y + wr2.height / 2);
+		Vector2 arrowPos = new Vector2 ();
+		float left = wr2.x;
+		float right = wr2.x + wr2.width;
+		float top = wr2.y;
+		float bottom = wr2.y + wr2.height;
+		
+		Vector2 topLeft = new Vector2 (wr2.x, wr2.y);
+		Vector2 topRight = new Vector2 (wr2.x + wr2.width, wr2.y);
+		Vector2 bottomLeft = new Vector2 (wr2.x, wr2.y + wr2.height);
+		Vector2 bottomRight = new Vector2 (wr2.x + wr2.width, wr2.y + wr2.height);
+		
+		float ans1 = calcPosition (topLeft, bottomRight, pointA);
+		float ans2 = calcPosition (bottomLeft, topRight, pointA);
+		
+		
+		if (0 <= ans1 && 0 <= ans2) {
+			//Debug.Log("bottom");
+			float w1 = Mathf.Abs (pointB.y - pointA.y);
+			float w2 = Mathf.Abs (pointB.y - bottom);
+			float h1 = pointB.x - pointA.x;
+			float h2 = h1 * w2 / w1;
+			arrowPos.y = bottom;
+			arrowPos.x = pointB.x - h2;			
+		} else if (0 > ans1 && 0 <= ans2) {
+			//Debug.Log("right");
+			float w1 = Mathf.Abs (pointB.x - pointA.x);
+			float w2 = Mathf.Abs (pointB.x - right);
+			float h1 = pointB.y - pointA.y;
+			float h2 = h1 * w2 / w1;
+			arrowPos.x = right;
+			arrowPos.y = pointB.y - h2;
+		} else if (0 <= ans1 && 0 > ans2) {
+			//Debug.Log("left");
+			float w1 = Mathf.Abs (pointB.x - pointA.x);
+			float w2 = Mathf.Abs (pointB.x - left);
+			float h1 = pointB.y - pointA.y;
+			float h2 = h1 * w2 / w1;
+			arrowPos.x = left;
+			arrowPos.y = pointB.y - h2;
+		} else if (0 > ans1 && 0 > ans2) {
+			//Debug.Log("top");
+			float w1 = Mathf.Abs (pointB.y - pointA.y);
+			float w2 = Mathf.Abs (pointB.y - top);
+			float h1 = pointB.x - pointA.x;
+			float h2 = h1 * w2 / w1;
+			arrowPos.y = top;
+			arrowPos.x = pointB.x - h2;
+		}
+		return arrowPos;
+	}
+	
+	void drawLine (Rect wr, Rect wr2, Color color, bool mouse, Texture2D srcAnchor, Texture2D destAnchor)
 	{
 		Vector2 pointA = new Vector2 (wr.x + wr.width / 2, wr.y + wr.height / 2);
 		Vector2 pointB = new Vector2 (wr2.x + wr2.width / 2, wr2.y + wr2.height / 2);
+		
+		Vector2 destAnchorPos = GetAnchorPos (pointA, wr2);
+		Vector2 srcAnchorPos = GetAnchorPos (pointB, wr);		
+		
+		
 		float width = 2;
 			
 		Color savedColor = GUI.color;
@@ -442,83 +555,45 @@ public class ClassDiagramEditor: EditorWindow
 		}
 		
 		
-		float angle = Vector3.Angle (pointB - pointA, Vector2.right) * (pointA.y <= pointB.y ? 1 : -1);
+		float angle = Vector3.Angle (destAnchorPos - srcAnchorPos, Vector2.right) * (srcAnchorPos.y <= pointB.y ? 1 : -1);
 		//Debug.Log (" a=" + pointA + " b=" + pointB + " A=" + angle);
 		
-		float dx = pointB.x - pointA.x;
-		float dy = pointB.y - pointA.y;
+		float dx = destAnchorPos.x - srcAnchorPos.x;
+		float dy = destAnchorPos.y - srcAnchorPos.y;
 		float length = Mathf.Sqrt (dx * dx + dy * dy);
 		GUI.color = color;
-		GUI.matrix = Matrix4x4.TRS (new Vector3 (pointA.x, pointA.y, 0), Quaternion.identity, Vector3.one);
-		GUIUtility.RotateAroundPivot (angle, pointA);
+		GUI.matrix = Matrix4x4.TRS (new Vector3 (srcAnchorPos.x, srcAnchorPos.y, 0), Quaternion.identity, Vector3.one);
+		GUIUtility.RotateAroundPivot (angle, srcAnchorPos);
 		
 		GUI.DrawTexture (new Rect (0, 0, length, 1), lineTex);
 		
-		Vector2 arrowPos = new Vector2 ();
-		
-		
-		
-		float left = wr2.x;
-		float right = wr2.x + wr2.width;
-		float top = wr2.y;
-		float bottom = wr2.y + wr2.height;
-		
-		Vector2 topLeft = new Vector2 (wr2.x, wr2.y);
-		Vector2 topRight = new Vector2 (wr2.x + wr2.width, wr2.y);
-		Vector2 bottomLeft = new Vector2 (wr2.x, wr2.y + wr2.height);
-		Vector2 bottomRight = new Vector2 (wr2.x + wr2.width, wr2.y + wr2.height);
-		
-		
-		
-		float ans1 = calcPosition (topLeft, bottomRight, pointA);
-		float ans2 = calcPosition (bottomLeft, topRight, pointA);
-		
-		if (mouse) {
-			arrowPos.x = pointB.x;
-			arrowPos.y = pointB.y;
-		} else {
-			if (0 <= ans1 && 0 <= ans2) {
-				//Debug.Log("bottom");
-				float w1 = Mathf.Abs (pointB.y - pointA.y);
-				float w2 = Mathf.Abs (pointB.y - bottom);
-				float h1 = pointB.x - pointA.x;
-				float h2 = h1 * w2 / w1;
-				arrowPos.y = bottom;
-				arrowPos.x = pointB.x - h2;			
-			} else if (0 > ans1 && 0 <= ans2) {
-				//Debug.Log("right");
-				float w1 = Mathf.Abs (pointB.x - pointA.x);
-				float w2 = Mathf.Abs (pointB.x - right);
-				float h1 = pointB.y - pointA.y;
-				float h2 = h1 * w2 / w1;
-				arrowPos.x = right;
-				arrowPos.y = pointB.y - h2;
-			} else if (0 <= ans1 && 0 > ans2) {
-				//Debug.Log("left");
-				float w1 = Mathf.Abs (pointB.x - pointA.x);
-				float w2 = Mathf.Abs (pointB.x - left);
-				float h1 = pointB.y - pointA.y;
-				float h2 = h1 * w2 / w1;
-				arrowPos.x = left;
-				arrowPos.y = pointB.y - h2;
-			} else if (0 > ans1 && 0 > ans2) {
-				//Debug.Log("top");
-				float w1 = Mathf.Abs (pointB.y - pointA.y);
-				float w2 = Mathf.Abs (pointB.y - top);
-				float h1 = pointB.x - pointA.x;
-				float h2 = h1 * w2 / w1;
-				arrowPos.y = top;
-				arrowPos.x = pointB.x - h2;
-			}
-		}
 		
 		GUI.color = savedColor;
-		Vector2 arrowPivot = new Vector2 (arrowPos.x, arrowPos.y);
-		arrowPos.x -= 16;
-		arrowPos.y -= 8;
-		GUI.matrix = Matrix4x4.TRS (arrowPos, Quaternion.identity, Vector3.one);
+		
+		if (destAnchor != null) {
+			DrawAnchor (destAnchorPos, angle, destAnchor);
+		}
+		if (srcAnchor != null) {
+			DrawAnchor (srcAnchorPos, angle + 180, srcAnchor);
+		}
+		
+		
+		GUI.matrix = savedMatrix;
+		GUI.color = savedColor;
+	}
+	
+	void DrawAnchor (Vector2 destAnchorPos, float angle, Texture2D texAnchor)
+	{
+		Color savedColor = GUI.color;
+		Matrix4x4 savedMatrix = GUI.matrix;
+		
+		Vector2 arrowPivot = new Vector2 (destAnchorPos.x, destAnchorPos.y);
+		Vector2 arrowPoint = new Vector2 (destAnchorPos.x, destAnchorPos.y);
+		arrowPoint.x -= 16;
+		arrowPoint.y -= 8;
+		GUI.matrix = Matrix4x4.TRS (arrowPoint, Quaternion.identity, Vector3.one);
 		GUIUtility.RotateAroundPivot (angle, arrowPivot);
-		GUI.DrawTexture (new Rect (0, 0, 16, 16), texTriangle);
+		GUI.DrawTexture (new Rect (0, 0, 16, 16), texAnchor);
 		
 		GUI.matrix = savedMatrix;
 		GUI.color = savedColor;

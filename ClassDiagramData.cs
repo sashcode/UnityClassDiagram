@@ -15,23 +15,36 @@ public class ClassDiagramData : MonoBehaviour
 		diagramName = "diagram name";
 		types = new string[]{"int", "float", "string", "bool", "Color", "Vector2", "Vector3", "Vector4", "AnimationCurve","Rect", "Texture", "Texture2D", "Object"};
 	}
+	
+	public Class GetClass (string classId)
+	{
+		for (int index = 0; index < classes.Length; index++) {
+			Class clazz = (Class)classes.GetValue (index);
+			if (clazz.id != null && 0 < clazz.id.Length && clazz.id == classId) {
+				return clazz;
+			}
+		}
+		return null;
+	}
 }
 
 [System.Serializable]
 public class Class : DiagramNode
 {
 	public string name;
-	public string guid;
+	public string id;
 	public string iconPath;
 	public Attribute[] attributes = new Attribute[0];
-	public string superClassName = null;
+	public CompositeReference[] compositeReferences = new CompositeReference[0];
 	public Reference[] references = new Reference[0];
-	public CompositeReference[] compositeReferences;
-	 
+	public Generalization[] generalizations = new Generalization[0];
+	
+	public string superClassName = null;
+
 	public Class ()
 	{
 		name = "class name";
-		guid = System.Guid.NewGuid ().ToString ("N");
+		id = System.Guid.NewGuid ().ToString ("N");
 	}
 
 	public Class GetSuperClass (ClassDiagramData data)
@@ -47,27 +60,29 @@ public class Class : DiagramNode
 }
 	
 [System.Serializable]
-public class Reference
+public class Reference :DiagramConnection
 {
 	public string name;
 	public string  classId;
 	[System.NonSerialized]
 	public Class destClass;
 
-	public Class GetDestClass (ClassDiagramData data)
-	{
-		for (int index = 0; index < data.classes.Length; index++) {
-			
-		}
-		return null;
-	}
-	
 }
-
-public class CompositeReference
+[System.Serializable]
+public class CompositeReference:DiagramConnection
 {
 	public string name;
-	public Class type;
+	public string  classId;
+	[System.NonSerialized]
+	public Class destClass;
+}
+[System.Serializable]
+public class Generalization:DiagramConnection
+{
+	public string name;
+	public string  classId;
+	[System.NonSerialized]
+	public Class destClass;	
 }
 
 [System.Serializable]
@@ -83,4 +98,12 @@ public class DiagramNode
 {
 	public Rect rect = new Rect (50, 100, 180, 30);
 	
+}
+
+public class DiagramConnection
+{
+	[System.NonSerialized]
+	public Texture2D targetAnchor = null;
+	[System.NonSerialized]
+	public Texture2D sourceAnchor = null;
 }
