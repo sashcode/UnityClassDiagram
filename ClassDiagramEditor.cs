@@ -1,18 +1,23 @@
+
+
 using UnityEngine;
 using UnityEditor;
 using System.Collections;
+using UnityClassDiagram;
 
 public class ClassDiagramEditor: EditorWindow
 {
 	private Texture2D texAdd = loadTexture ("UnityClassDiagram/icons/add.png");
 	private Texture2D texRemove = loadTexture ("UnityClassDiagram/icons/remove.png");
 	private Texture2D texRemoveMini = loadTexture ("UnityClassDiagram/icons/removeMini.png");
-	private Texture2D texSuper = loadTexture ("UnityClassDiagram/icons/super.png");
+	private Texture2D texSuper = loadTexture ("UnityClassDiagram/icons/triangle_tool.png");
 	private Texture2D texNoImage = loadTexture ("UnityClassDiagram/icons/no_image.png");
 	private Texture2D texNoImage16 = loadTexture ("UnityClassDiagram/icons/no_image16.png");
 	private Texture2D texTriangle = loadTexture ("UnityClassDiagram/icons/triangle.png");
 	private Texture2D texComposite = loadTexture ("UnityClassDiagram/icons/composite.png");
+	private Texture2D texCompositeTool = loadTexture ("UnityClassDiagram/icons/composite_tool.png");
 	private Texture2D texReference = loadTexture ("UnityClassDiagram/icons/reference.png");
+	private Texture2D texReferenceTool = loadTexture ("UnityClassDiagram/icons/reference_tool.png");
 	private Texture2D lineTex = null;
 	private ClassDiagramData cuurentClassData;
 	private Class focusClass = null;
@@ -160,12 +165,12 @@ public class ClassDiagramEditor: EditorWindow
 					changeModeRef (clazz, mode_ref_gen);
 				}
 			}
-			style.normal.background = texComposite;
+			style.normal.background = texCompositeTool;
 			btnRect.x += 18;
 			if (GUI.Button (btnRect, "", style)) {
 				changeModeRef (clazz, mode_ref_com);
 			}
-			style.normal.background = texReference;
+			style.normal.background = texReferenceTool;
 			btnRect.x += 18;
 			if (GUI.Button (btnRect, "", style)) {
 				changeModeRef (clazz, mode_ref_ref);
