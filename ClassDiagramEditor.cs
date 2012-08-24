@@ -19,10 +19,10 @@ public class ClassDiagramEditor: EditorWindow
 	private Texture2D texReference = loadTexture ("UnityClassDiagram/icons/reference.png");
 	private Texture2D texReferenceTool = loadTexture ("UnityClassDiagram/icons/reference_tool.png");
 	private Texture2D lineTex = null;
-	private ClassDiagramData cuurentClassData;
-	private Class focusClass = null;
-	private Class refModeClass = null;
-	private Class refModeTargetClass = null;
+	private ClassDiagramRoot cuurentClassData;
+	private ClassNode focusClass = null;
+	private ClassNode refModeClass = null;
+	private ClassNode refModeTargetClass = null;
 	private int focusWidowId = -1;
 	private int mode = 0;
 	private const int mode_draw = 0;
@@ -49,7 +49,7 @@ public class ClassDiagramEditor: EditorWindow
 		mode = mode_draw;
 	}
 
-	private void changeModeRef (Class clazz, int refType)
+	private void changeModeRef (ClassNode clazz, int refType)
 	{
 		wantsMouseMove = true;
 		Debug.Log ("changeModeRef" + " wantsMouseMove=" + wantsMouseMove);
@@ -68,7 +68,7 @@ public class ClassDiagramEditor: EditorWindow
 	static void Create ()
 	{     
 		GameObject gameObject = new GameObject ();
-		gameObject.AddComponent ("ClassDiagramData");
+		gameObject.AddComponent ("ClassDiagramRoot");
 		string newPrefabPath = "Assets/ClassDiagram";
 		string extension = ".prefab";
 		string newPath = newPrefabPath + extension;
@@ -105,7 +105,7 @@ public class ClassDiagramEditor: EditorWindow
 	void drawWindow (int id)
 	{
 		
-		Class clazz = (Class)cuurentClassData.classes.GetValue (id);
+		ClassNode clazz = (ClassNode)cuurentClassData.classes.GetValue (id);
 		
 		Rect boxRect = new Rect (0, 16, clazz.rect.width, clazz.rect.height - 16);
 		GUI.Box (boxRect, "");
@@ -187,7 +187,7 @@ public class ClassDiagramEditor: EditorWindow
 			btnRect.x = bx;
 			btnRect.y = 0;
 			if (GUI.Button (btnRect, "", style)) {
-				System.Collections.Generic.List<Class> classList = new System.Collections.Generic.List<Class> (cuurentClassData.classes);
+				System.Collections.Generic.List<ClassNode> classList = new System.Collections.Generic.List<ClassNode> (cuurentClassData.classes);
 				classList.Remove (clazz);
 				cuurentClassData.classes = classList.ToArray ();
 			}
@@ -307,13 +307,13 @@ public class ClassDiagramEditor: EditorWindow
 		
 		GameObject gameObject = Selection.activeGameObject;
 		if (!gameObject) {
-			GUI.Label (new Rect (20, 20, 300, 100), "ClassDiagramData is not found.");
+			GUI.Label (new Rect (20, 20, 300, 100), "ClassDiagramRoot is not found.");
 			return;
 		}
 			
-		ClassDiagramData classData = gameObject.GetComponent<ClassDiagramData> ();
+		ClassDiagramRoot classData = gameObject.GetComponent<ClassDiagramRoot> ();
 		if (!classData) {
-			GUI.Label (new Rect (20, 20, 300, 100), "Select ClassDiagramData.");
+			GUI.Label (new Rect (20, 20, 300, 100), "Select ClassDiagramRoot.");
 			return;
 		}
 		
@@ -335,8 +335,8 @@ public class ClassDiagramEditor: EditorWindow
 		}
 		
 		if (GUI.Button (new Rect (10, 35, 25, 18), "+")) {
-			System.Collections.Generic.List<Class> classList = new System.Collections.Generic.List<Class> (classData.classes);
-			Class newClass = new Class ();
+			System.Collections.Generic.List<ClassNode> classList = new System.Collections.Generic.List<ClassNode> (classData.classes);
+			ClassNode newClass = new ClassNode ();
 			{
 				string newName = newClass.name;
 				int size = classData.classes.Length;
@@ -345,7 +345,7 @@ public class ClassDiagramEditor: EditorWindow
 					int index = 1;
 					while (true) {
 						bool exist = false;
-						foreach (Class c in classList) {
+						foreach (ClassNode c in classList) {
 							if (c.name == nameTemp) {
 								exist = true;
 								break;
@@ -370,7 +370,7 @@ public class ClassDiagramEditor: EditorWindow
 				if (0 < size) {
 					while (true) {
 						bool exist = false;
-						foreach (Class c in classList) {
+						foreach (ClassNode c in classList) {
 							if (c.rect.x == newRect.x && c.rect.y == newRect.y) {
 								exist = true;
 								break;
@@ -398,7 +398,7 @@ public class ClassDiagramEditor: EditorWindow
 		GUIStyle windowStyle = new GUIStyle (GUIStyle.none);
 		BeginWindows ();
 		for (int index = 0; index < cuurentClassData.classes.Length; index++) {
-			Class clazz = (Class)cuurentClassData.classes.GetValue (index);	
+			ClassNode clazz = (ClassNode)cuurentClassData.classes.GetValue (index);	
 			clazz.rect = GUI.Window (index, clazz.rect, drawWindow, "", windowStyle);
 			
 			if (focusWidowId == index) {
@@ -406,7 +406,7 @@ public class ClassDiagramEditor: EditorWindow
 			}
 			
 			if (clazz.superClassName != null) {
-				Class target = clazz.GetSuperClass (cuurentClassData);
+				ClassNode target = clazz.GetSuperClassNode (cuurentClassData);
 				Rect clazzRect = new Rect (clazz.rect.x, clazz.rect.y + 16, clazz.rect.width, clazz.rect.height - 16);
 				if (target != null) {
 					drawLine (clazzRect
