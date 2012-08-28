@@ -1,12 +1,19 @@
-
-
 using UnityEngine;
 using UnityEditor;
 using System.Collections;
-using UnityClassDiagram;
 
-public class ClassDiagramEditor: EditorWindow
+public class ClassDiagramEditor: DiagramEditorWindow
 {
+	override protected DiagramRoot getDiagramRoot (GameObject activeGameObject)
+	{
+		return activeGameObject.GetComponent<ClassDiagramRoot> ();
+	}
+
+	override protected string GetNullDiagramRootMessage ()
+	{
+		return "ClassDiagramRoot is not found.";	
+	}
+	
 	private Texture2D texAdd = loadTexture ("UnityClassDiagram/icons/add.png");
 	private Texture2D texRemove = loadTexture ("UnityClassDiagram/icons/remove.png");
 	private Texture2D texRemoveMini = loadTexture ("UnityClassDiagram/icons/removeMini.png");
@@ -43,7 +50,7 @@ public class ClassDiagramEditor: EditorWindow
 	private void changeModeDraw ()
 	{
 		wantsMouseMove = false;
-		Debug.Log ("changeModeDraw" + " wantsMouseMove=" + wantsMouseMove);
+		//Debug.Log ("changeModeDraw" + " wantsMouseMove=" + wantsMouseMove);
 		refModeClass = null;
 		refModeTargetClass = null;
 		mode = mode_draw;
@@ -52,17 +59,12 @@ public class ClassDiagramEditor: EditorWindow
 	private void changeModeRef (ClassNode clazz, int refType)
 	{
 		wantsMouseMove = true;
-		Debug.Log ("changeModeRef" + " wantsMouseMove=" + wantsMouseMove);
+		//Debug.Log ("changeModeRef" + " wantsMouseMove=" + wantsMouseMove);
 		refModeClass = clazz;
 		mode = refType;
 	}
 		
 	static ClassDiagramEditor window = null;
-	
-	void OnSelectionChange ()
-	{
-		Repaint ();
-	}
 		
 	[MenuItem("Assets/Create/ClassDiagram")]
 	static void Create ()
@@ -287,7 +289,7 @@ public class ClassDiagramEditor: EditorWindow
 		return null;
 	}
 	
-	void OnGUI ()
+	override  protected void OnGUIimpl ()
 	{
 		Event e = Event.current;
 		switch (e.type) {
@@ -393,7 +395,7 @@ public class ClassDiagramEditor: EditorWindow
 			cuurentClassData.classes = classList.ToArray ();	
 		}
 		
-		cuurentClassData.diagramName = GUI.TextField (new Rect (10, 10, 200, 20), cuurentClassData.diagramName);
+		
 		
 		GUIStyle windowStyle = new GUIStyle (GUIStyle.none);
 		BeginWindows ();

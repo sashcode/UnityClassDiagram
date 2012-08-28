@@ -2,14 +2,14 @@ using UnityEngine;
 using System.Collections;
 
 [System.Serializable]
-public class ClassDiagramRoot : MonoBehaviour
+public class ClassDiagramRoot : DiagramRoot
 {
-	public string diagramName;
 	public ClassNode[] classes;
-	public string[] types ;
 	
 	public ClassDiagramRoot ()
 	{
+		nodes.Add(new ClassNode ());
+		
 		classes = new ClassNode [1];
 		classes [0] = new ClassNode ();
 		diagramName = "diagram name";

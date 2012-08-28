@@ -1,15 +1,36 @@
 using UnityEngine;
-using System.Collections;
+using System.Collections.Generic;
 
-public class DiagramRoot : MonoBehaviour {
-
-	// Use this for initialization
-	void Start () {
+public class DiagramRoot : MonoBehaviour  , DiagramElement{
 	
+	public string diagramName;
+	public Rect diagramNameRect = new Rect (10, 10, 200, 20);
+	
+	
+	public List<DiagramNode> nodes = new List<DiagramNode> ();
+	public string[] types ;
+		
+	public void Draw(DiagramContext context){
+
+		diagramName = GUI.TextField (diagramNameRect, diagramName);
+		
+		foreach(DiagramNode node in nodes){
+			node.DrawNode(context);
+		}
+		
+		foreach(DiagramNode node in nodes){
+			node.DrawEdge(context);
+		}
+		
+	}
+	public DiagramDragTracker GetDragTracker(){
+		return null;
 	}
 	
-	// Update is called once per frame
-	void Update () {
-	
+	public DiagramElement HitTest(Vector2 position){
+		return this;
+	}
+	public void DrawHandle(DiagramContext context){
+		
 	}
 }
