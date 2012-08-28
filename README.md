@@ -1,5 +1,5 @@
-UnityClassDiagram
-=================
+UnityClassDiagram (tag 0.1)
+===========================
 
 Class Diagram for Unity.
 
