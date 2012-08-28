@@ -5,9 +5,13 @@ public interface DiagramElement  {
 	
 	void Draw(DiagramContext context);
 	
-	 DiagramElement HitTest(Vector2 position);
+	DiagramElement HitTest(DiagramContext context ,Vector2 position);
+	
+	
+	DiagramHandle[] GetHandles();
 	
 	void DrawHandle(DiagramContext context);
+	
 	
 	DiagramDragTracker GetDragTracker();
 	

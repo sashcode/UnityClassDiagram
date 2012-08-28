@@ -7,7 +7,7 @@ public class DiagramDefaultTool : DiagramTool
 
 	public void log (string text)
 	{
-		Debug.Log (text);
+		//Debug.Log (text);
 	}
 	
 	public override bool OnGUI (DiagramContext context)
@@ -76,7 +76,7 @@ public class DiagramDefaultTool : DiagramTool
 				log ("MouseDrag");
 				if (dragTracker != null) {
 					dragTracker.OnDrag (context, Event.current.mousePosition);
-				context.editor.Repaint ();
+					context.editor.Repaint ();
 				}
 				break;
 			}
@@ -126,11 +126,27 @@ public class DiagramDefaultTool : DiagramTool
 		
 		DiagramElement hit = null;
 		
-		//Node Hit Test
-		foreach (DiagramNode node in root.nodes) {
-			hit = node.HitTest (position);
-			if (hit != null) {
-				break;
+		//Handle Hit Test
+		foreach (DiagramElement element in context.GetSelection().GetElements()) {
+			DiagramHandle[] handles = element.GetHandles ();
+			if (handles != null) {
+				foreach (DiagramHandle handle in handles) {
+					hit = handle.HitTest (context, position);
+					if (hit != null) {
+						Debug.Log(" handle hit !!");
+						break;
+					}
+				}
+			}
+		}
+		
+		if (hit == null) {
+			//Node Hit Test
+			foreach (DiagramNode node in root.nodes) {
+				hit = node.HitTest (context, position);
+				if (hit != null) {
+					break;
+				}
 			}
 		}
 		
@@ -138,7 +154,7 @@ public class DiagramDefaultTool : DiagramTool
 		if (hit == null) {
 			foreach (DiagramNode node in root.nodes) {
 				foreach (DiagramEdge edge in node.edges) {
-					hit = edge.HitTest (position);
+					hit = edge.HitTest (context, position);
 					if (hit != null) {
 						break;
 					}	
@@ -148,7 +164,7 @@ public class DiagramDefaultTool : DiagramTool
 		
 		//Diagram Hit Test (canvas)
 		if (hit == null) {
-			hit = root.HitTest (position);
+			hit = root.HitTest (context, position);
 		}
 		
 		
@@ -157,24 +173,23 @@ public class DiagramDefaultTool : DiagramTool
 			context.GetSelection ().Clear ();
 			dragTracker = null;
 			return;
-		} else {
-			dragTracker = hit.GetDragTracker ();
-		}
+		} 
 		
+		dragTracker = hit.GetDragTracker ();
+			
 		// Modifirers check
 		EventModifiers mod = Event.current.modifiers;
 		bool selectAdd = mod.Equals (EventModifiers.Shift);
-		
-		
-		if (selectAdd) {
-			context.GetSelection ().AddElement (hit);	
+			
+		if (hit is DiagramHandle) {
+				
 		} else {
-			context.GetSelection ().SetElement (hit);	
+			if (selectAdd) {
+				context.GetSelection ().AddElement (hit);	
+			} else {
+				context.GetSelection ().SetElement (hit);	
+			}
+				
 		}
-		
-		
-		
-		
-		
 	}
 }

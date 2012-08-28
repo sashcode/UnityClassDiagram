@@ -16,6 +16,10 @@ public class NodeHandle : DiagramHandle
 	private int half_size = 3;
 	private DiagramNode node;
 	
+	public int GetPosition(){
+		return pos;
+	}
+	
 	public NodeHandle (DiagramNode node, int  position)
 	{
 		this.node = node;
@@ -80,7 +84,16 @@ public class NodeHandle : DiagramHandle
 	}
 	
 	
-	public DiagramDragTracker GetDragTracker(){
+	override public DiagramDragTracker GetDragTracker(){
+		return new NodeResizeDragTracker(this);
+	}
+	
+	
+	override  public DiagramElement HitTest(DiagramContext context , Vector2 position){
+		Debug.Log(" handle hit test " + position);
+		if(GetRect ().Contains(position)){
+			return this;
+		}
 		return null;
 	}
 	

@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
-public class DiagramEdge : DiagramElement
+public class DiagramEdge : DiagramSelectableElement
 {
 	[System.NonSerialized]
 	public Texture2D targetAnchor = null;
@@ -11,8 +11,11 @@ public class DiagramEdge : DiagramElement
 	public virtual void Draw(DiagramContext context){
 		
 	}
+	public DiagramHandle[] GetHandles(){
+		return null;
+	}
 	
-	public DiagramElement HitTest(Vector2 position){
+	public DiagramElement HitTest(DiagramContext context,Vector2 position){
 		
 		return null;
 	}

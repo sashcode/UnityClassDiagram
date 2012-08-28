@@ -27,10 +27,14 @@ public class DiagramRoot : MonoBehaviour  , DiagramElement{
 		return null;
 	}
 	
-	public DiagramElement HitTest(Vector2 position){
+	public DiagramElement HitTest(DiagramContext context,Vector2 position){
 		return this;
 	}
 	public void DrawHandle(DiagramContext context){
 		
+	}
+	
+	public DiagramHandle[] GetHandles(){
+		return null;
 	}
 }

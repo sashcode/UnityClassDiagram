@@ -2,16 +2,21 @@ using UnityEngine;
 using System.Collections.Generic;
 
 [System.Serializable]
-public class DiagramNode:DiagramElement
+public class DiagramNode:DiagramSelectableElement
 {
 	public List<DiagramEdge> edges = new List<DiagramEdge> ();
 	public Rect rect = new Rect (50, 100, 180, 30);
+	[System.NonSerialized]
 	private NodeHandle[] handles = new NodeHandle[8];
 	
 	public DiagramNode(){
 		for(int i = 0 ; i < 8 ; i++){
 			handles[i] = new NodeHandle(this , i);
 		}
+	}
+	
+	override public DiagramHandle[] GetHandles(){
+		return handles;
 	}
 	
 	public void Draw(DiagramContext context){
@@ -24,7 +29,7 @@ public class DiagramNode:DiagramElement
 		GUI.Box (rect, "");
 	}
 	
-	public DiagramElement HitTest(Vector2 position){
+	public DiagramElement HitTest(DiagramContext context,Vector2 position){
 		//Debug.Log(" node log  " + position);
 		if(rect.Contains(position)){
 			return this;
@@ -41,14 +46,14 @@ public class DiagramNode:DiagramElement
 		}
 	}
 	
-	public void DrawHandle(DiagramContext context){
+	override public  void DrawHandle(DiagramContext context){
 		
 		foreach(NodeHandle handle in  handles){
 			handle.Draw(context);
 		}
 	}
 	
-	public DiagramDragTracker GetDragTracker(){
-		return new DefaultDragTracker(rect);
+	override public DiagramDragTracker GetDragTracker(){
+		return new MoveDragTracker();
 	}
 }
