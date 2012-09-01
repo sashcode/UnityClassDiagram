@@ -11,6 +11,18 @@ public class DiagramContext {
 		editor = editorWindow;
 		
 	}
+	public DiagramNode FindNode(string id){
+		
+		 foreach(DiagramNode node in editor.GetRoot().nodes){
+			Debug.Log(" find Node !! " + node.uuid + "   " + id);
+			if(node.uuid == id){
+			return node;	
+			}
+		}
+		return null;
+	}
+	
+
 	
 	public DiagramSelection GetSelection(){
 		
@@ -46,6 +58,7 @@ public class DiagramContext {
 	public Vector2 GetDragDelta(){
 	return dragDelta;
 	}
+	
 }
 
 public class DiagramSelection{

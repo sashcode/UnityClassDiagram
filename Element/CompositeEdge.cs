@@ -8,5 +8,6 @@ public class  CompositeEdge:DiagramEdge
 	public string  classId;
 	[System.NonSerialized]
 	public ClassNode destClass;
+	
 }
 

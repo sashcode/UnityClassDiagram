@@ -180,14 +180,20 @@ public class DiagramDefaultTool : DiagramTool
 		// Modifirers check
 		EventModifiers mod = Event.current.modifiers;
 		bool selectAdd = mod.Equals (EventModifiers.Shift);
-			
+		
 		if (hit is DiagramHandle) {
 				
 		} else {
 			if (selectAdd) {
+				if(context.GetSelection().GetElements().Contains(hit)){
+				}else{
 				context.GetSelection ().AddElement (hit);	
+				}
 			} else {
+				if(context.GetSelection().GetElements().Contains(hit)){
+				}else{
 				context.GetSelection ().SetElement (hit);	
+				}
 			}
 				
 		}

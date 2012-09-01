@@ -8,6 +8,7 @@ public class ReferenceEdge :DiagramEdge
 	public string  classId;
 	[System.NonSerialized]
 	public ClassNode destClass;
+	
 
 }
 

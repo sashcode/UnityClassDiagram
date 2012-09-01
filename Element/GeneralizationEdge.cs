@@ -8,4 +8,5 @@ public class GeneralizationEdge:DiagramEdge
 	public string  classId;
 	[System.NonSerialized]
 	public ClassNode destClass;	
+	
 }

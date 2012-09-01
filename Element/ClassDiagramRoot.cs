@@ -8,7 +8,18 @@ public class ClassDiagramRoot : DiagramRoot
 	
 	public ClassDiagramRoot ()
 	{
-		nodes.Add(new ClassNode ());
+		ClassNode node1 = new ClassNode ();
+		ClassNode node2 = new ClassNode ();
+		GeneralizationEdge edge1 = new GeneralizationEdge ();
+		
+		edge1.SetSource(node1);
+		edge1.SetTarget(node2);
+		
+		
+		
+		node1.edges.Add(edge1);
+		nodes.Add(node1);
+		nodes.Add(node2);
 		
 		classes = new ClassNode [1];
 		classes [0] = new ClassNode ();

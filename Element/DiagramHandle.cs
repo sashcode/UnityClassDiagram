@@ -21,5 +21,5 @@ public class DiagramHandle : DiagramElement {
 	virtual public DiagramHandle[] GetHandles(){
 		return null;
 	}
-
+	
 }

@@ -91,7 +91,7 @@ public class NodeHandle : DiagramHandle
 	
 	override  public DiagramElement HitTest(DiagramContext context , Vector2 position){
 		Debug.Log(" handle hit test " + position);
-		if(GetRect ().Contains(position)){
+		if(DiagramUtil.ExpandRect(GetRect () , 6 , 6).Contains(position)){
 			return this;
 		}
 		return null;
