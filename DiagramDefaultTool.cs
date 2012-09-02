@@ -133,7 +133,7 @@ public class DiagramDefaultTool : DiagramTool
 				foreach (DiagramHandle handle in handles) {
 					hit = handle.HitTest (context, position);
 					if (hit != null) {
-						Debug.Log(" handle hit !!");
+						Debug.Log (" handle hit !!");
 						break;
 					}
 				}
@@ -185,14 +185,14 @@ public class DiagramDefaultTool : DiagramTool
 				
 		} else {
 			if (selectAdd) {
-				if(context.GetSelection().GetElements().Contains(hit)){
-				}else{
-				context.GetSelection ().AddElement (hit);	
+				if (context.GetSelection ().GetElements ().Contains (hit)) {
+				} else {
+					context.GetSelection ().AddElement (hit);	
 				}
 			} else {
-				if(context.GetSelection().GetElements().Contains(hit)){
-				}else{
-				context.GetSelection ().SetElement (hit);	
+				if (context.GetSelection ().GetElements ().Contains (hit)) {
+				} else {
+					context.GetSelection ().SetElement (hit);	
 				}
 			}
 				

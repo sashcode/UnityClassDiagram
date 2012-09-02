@@ -12,6 +12,8 @@ public class DiagramEdge : DiagramSelectableElement
 	public string targetId;
 	[System.NonSerialized]
 	public static List<EdgeHandle> TEMP_HANDLES = new List<EdgeHandle> ();
+	[System.NonSerialized]
+	public static List<Vector2> TEMP_POSITIONS = new List<Vector2> ();
 	
 	public void SetSource (DiagramNode node)
 	{
@@ -29,7 +31,16 @@ public class DiagramEdge : DiagramSelectableElement
 	
 	public virtual void Draw (DiagramContext context)
 	{
-			
+		List<EdgeHandle>  handles = GetHandles ( context);
+		for (int i = 0; i < handles.Count -1; i++) {
+			EdgeHandle handle1 = handles [i];
+			EdgeHandle handle2 = handles [i + 1];
+			drawLine (handle1.position, handle2.position, lineColor, false, null, null);
+		}
+	}
+	
+	public List<EdgeHandle> GetHandles (DiagramContext context)
+	{
 		Rect wr = sourceAnchor.GetNode (context).rect;
 		Rect wr2 = targetAnchor.GetNode (context).rect;
 		Vector2 pointA = new Vector2 (wr.x + wr.width / 2, wr.y + wr.height / 2);
@@ -42,27 +53,31 @@ public class DiagramEdge : DiagramSelectableElement
 		TEMP_HANDLES.AddRange (handles);
 		TEMP_HANDLES.Add (targetAnchor);
 		
-		for (int i = 0; i < TEMP_HANDLES.Count -1; i++) {
-			EdgeHandle handle1 = TEMP_HANDLES [i];
-			EdgeHandle handle2 = TEMP_HANDLES [i + 1];
-			drawLine (handle1.position, handle2.position, lineColor, false, null, null);
-		}
-	}
-	
-	public DiagramHandle[] GetHandles ()
-	{
-		return null;
+		return TEMP_HANDLES;
 	}
 	
 	public DiagramElement HitTest (DiagramContext context, Vector2 position)
 	{
-		
+		List<EdgeHandle>  handles = GetHandles ( context);
+		TEMP_POSITIONS.Clear();
+		for (int i = 0; i < handles.Count; i++) {
+			EdgeHandle handle1 = handles [i];
+			TEMP_POSITIONS.Add(handle1.position);
+		}	
+		if(DiagramUtil.ContainsEdge(TEMP_POSITIONS , position , 4)){
+			Debug.Log(" HIT Edge !");
+			return this;
+		}
 		return null;
 	}
 	
-	public void DrawHandle (DiagramContext context)
+	override public void DrawHandle (DiagramContext context)
 	{
-		
+		foreach(EdgeHandle handle in GetHandles ( context)){
+			Debug.Log(" Draw Edge Handle !" + handle);
+			handle .Draw(context);
+			
+		}
 	}
 
 	public DiagramDragTracker GetDragTracker ()
