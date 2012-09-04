@@ -7,7 +7,7 @@ public class DiagramDefaultTool : DiagramTool
 
 	public void log (string text)
 	{
-		//Debug.Log (text);
+		Debug.Log (text);
 	}
 	
 	public override bool OnGUI (DiagramContext context)
@@ -83,6 +83,11 @@ public class DiagramDefaultTool : DiagramTool
 		case EventType.MouseUp:
 			{
 				context.DragEnd (Event.current.mousePosition);
+			    if (dragTracker != null) {
+					dragTracker.OnDrop (context, Event.current.mousePosition);
+					context.editor.Repaint ();
+				}
+			    dragTracker = null;
 				log ("MouseUp");
 				break;
 			}
@@ -113,8 +118,7 @@ public class DiagramDefaultTool : DiagramTool
 				//Repaint ();
 				break;
 			}
-		}
-		
+		}		
 		return true;
 		
 		//currentDiagramRoot.OnGUI();	

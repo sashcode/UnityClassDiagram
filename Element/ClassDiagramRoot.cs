@@ -10,16 +10,17 @@ public class ClassDiagramRoot : DiagramRoot
 	{
 		ClassNode node1 = new ClassNode ();
 		ClassNode node2 = new ClassNode ();
-		GeneralizationEdge edge1 = new GeneralizationEdge ();
+		ClassNode node3 = new ClassNode ();
+		DiagramEdge edge1 = new DiagramEdge ();
 		
 		edge1.SetSource(node1);
 		edge1.SetTarget(node2);
 		
 		
-		
 		node1.edges.Add(edge1);
 		nodes.Add(node1);
 		nodes.Add(node2);
+		nodes.Add(node3);
 		
 		classes = new ClassNode [1];
 		classes [0] = new ClassNode ();

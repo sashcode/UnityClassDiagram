@@ -5,6 +5,9 @@ using System.Collections.Generic;
 public class DiagramNode:DiagramSelectableElement
 {
 	public List<DiagramEdge> edges = new List<DiagramEdge> ();
+	public int typeId = Config.NODE_TYPE_CLASS;
+	
+	public List<Attribute> attributes = new List<Attribute>();
 	
 	public Rect rect = new Rect (50, 100, 180, 30);
 	[System.NonSerialized]
@@ -23,14 +26,14 @@ public class DiagramNode:DiagramSelectableElement
 		return handles;
 	}
 	
-	public void Draw(DiagramContext context){
-		
+	override public void Draw(DiagramContext context){
 		
 	}
 	
 	public virtual void DrawNode (DiagramContext context)
 	{ 
-		GUI.Box (rect, "");
+		NodeAdapter adapter = context.GetNodeAdapter(typeId);
+		adapter.DrawNode(this , context);
 	}
 	
 	public DiagramElement HitTest(DiagramContext context,Vector2 position){
@@ -60,4 +63,12 @@ public class DiagramNode:DiagramSelectableElement
 		return new MoveDragTracker();
 	}
 	
+}
+
+[System.Serializable]
+public class Attribute
+{
+	public string name = "name";
+	public string type = "type";
+	public string iconPath;
 }

@@ -58,10 +58,17 @@ public abstract class DiagramEditorWindow : EditorWindow
 		
 		
 		if (currentDiagramTool.OnGUI (diagramContext)) {
+			
+			foreach (DiagramNode node in currentDiagramRoot.nodes) {
+				foreach (DiagramEdge edge in node.edges) {
+					edge.UpdateAnchor (diagramContext);
+				}
+			}
+
 			currentDiagramRoot.Draw (diagramContext);
-			List<DiagramElement> elements = diagramContext.GetSelection().GetElements();
-			foreach(DiagramElement elm in elements){
-				elm.DrawHandle(diagramContext);
+			List<DiagramElement> elements = diagramContext.GetSelection ().GetElements ();
+			foreach (DiagramElement elm in elements) {
+				elm.DrawHandle (diagramContext);
 			}
 		}
 		

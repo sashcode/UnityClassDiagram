@@ -15,11 +15,14 @@ public class DiagramEdge : DiagramSelectableElement
 	[System.NonSerialized]
 	public static List<Vector2> TEMP_POSITIONS = new List<Vector2> ();
 	
+	public int typeId = Config.EDGE_TYPE_GENERALIZATION;
+	
 	public void SetSource (DiagramNode node)
 	{
 		EdgeAnchorHandle handle = new EdgeAnchorHandle ();
 		handle.nodeId = node.uuid;
 		sourceAnchor = handle;
+		sourceAnchor.node = node;
 	}
 	
 	public void SetTarget (DiagramNode node)
@@ -27,45 +30,131 @@ public class DiagramEdge : DiagramSelectableElement
 		EdgeAnchorHandle handle = new EdgeAnchorHandle ();
 		handle.nodeId = node.uuid;
 		targetAnchor = handle;
+		targetAnchor.node = node;
+	}
+	
+	public void UpdateAnchor (DiagramContext context)
+	{
+		
+		//
+		Rect sourceRect = sourceAnchor.GetNode (context).rect;
+		Rect targetRect = targetAnchor.GetNode (context).rect;
+		
+		Vector2 pointA = new Vector2 (sourceRect.x + sourceRect.width / 2, sourceRect.y + sourceRect.height / 2);
+		Vector2 pointB = new Vector2 (targetRect.x + targetRect.width / 2, targetRect.y + targetRect.height / 2);
+		
+		bool source = false;
+		bool target = false;
+		if (sourceAnchor.relative) {
+			//
+		} else {
+			if (sourceAnchor.relativePosition == EdgeAnchorHandle.CENTER) {
+				sourceAnchor.position = GetAnchorPos (pointB, sourceRect, pointA);
+			} else {
+				//if (!((sourceAnchor.relativePosition.x == 1.0f || sourceAnchor.relativePosition.x == 0.0f) && (sourceAnchor.relativePosition.y == 1.0f || sourceAnchor.relativePosition.y == 0.0f))) {
+					source = true;
+				//} else {
+				//	float tempX = sourceRect.x + sourceRect.width * sourceAnchor.relativePosition.x;
+				//	float tempY = sourceRect.y + sourceRect.height * sourceAnchor.relativePosition.y;
+				//	sourceAnchor.position.x = tempX;
+				//	sourceAnchor.position.y = tempY;
+				//}
+			}
+		}
+		
+		if (targetAnchor.relative) {
+			//
+		} else {
+			if (targetAnchor.relativePosition == EdgeAnchorHandle.CENTER) {
+				targetAnchor.position = GetAnchorPos (pointA, targetRect, pointB);	
+			} else {
+				//if (!((targetAnchor.relativePosition.x == 1.0f || targetAnchor.relativePosition.x == 0.0f) && (targetAnchor.relativePosition.y == 1.0f || targetAnchor.relativePosition.y == 0.0f))) {
+					target = true;
+				//} else {
+				//	targetAnchor.position.x = targetRect.x + targetRect.width * targetAnchor.relativePosition.x;
+				//	targetAnchor.position.y = targetRect.y + targetRect.height * targetAnchor.relativePosition.y;	
+				//}
+			}
+		}
+		
+		Debug.Log(" source anchor = " + sourceAnchor.relativePosition);
+		Debug.Log(" target anchor = " + targetAnchor.relativePosition);
+		if (source || target) {
+			if (source && target) {
+				pointA = new Vector2 (sourceRect.x + sourceRect.width * sourceAnchor.relativePosition.x, sourceRect.y + sourceRect.height * sourceAnchor.relativePosition.y);
+				pointB = new Vector2 (targetRect.x + targetRect.width * targetAnchor.relativePosition.x, targetRect.y + targetRect.height * targetAnchor.relativePosition.y);
+			} else if (source && !target) {
+				pointA = new Vector2 (sourceRect.x + sourceRect.width * sourceAnchor.relativePosition.x, sourceRect.y + sourceRect.height * sourceAnchor.relativePosition.y);
+			} else if (!source && target) {
+				pointB = new Vector2 (targetRect.x + targetRect.width * targetAnchor.relativePosition.x, targetRect.y + targetRect.height * targetAnchor.relativePosition.y);
+			}
+			if (source && target) {
+				sourceAnchor.position = GetAnchorPos (pointB, sourceRect, pointA);
+				targetAnchor.position = GetAnchorPos (pointA, targetRect, pointB);	
+			} else if (source && !target) {
+				Debug.Log(" source ");
+				sourceAnchor.position = GetAnchorPos (pointB, sourceRect, pointA);
+			} else if (!source && target) {
+				Debug.Log(" target ");
+				targetAnchor.position = GetAnchorPos (pointA, targetRect, pointB);	
+			}	
+		}
+		if(!sourceRect.Contains(pointA)){
+			Debug.LogError(" source Error pointA ! ");
+		}
+		if(!sourceRect.Contains(sourceAnchor.position)){
+			Debug.LogError(" source Error ! ");
+		}
+		if(!targetRect.Contains(targetAnchor.position)){
+			Debug.LogError(" target Error ! ");
+		}
+		
+		Debug.Log(" source anchor = " + sourceAnchor.position + "  sourceRect = "  + sourceRect);
+		Debug.Log("  pointA = " + pointA + " " + sourceRect.Contains(pointA));
+		Debug.Log(" target anchor = " + targetAnchor.position + "  targetRect = "  + targetRect);
+		Debug.Log("  pointB = " + pointB + " " + targetRect.Contains(pointB));
+		
 	}
 	
 	public virtual void Draw (DiagramContext context)
 	{
-		List<EdgeHandle>  handles = GetHandles ( context);
-		for (int i = 0; i < handles.Count -1; i++) {
+		EdgeHandle[] handles = GetEdgeHandles ();
+		for (int i = 0; i < handles.Length -1; i++) {
 			EdgeHandle handle1 = handles [i];
 			EdgeHandle handle2 = handles [i + 1];
-			drawLine (handle1.position, handle2.position, lineColor, false, null, null);
+			EdgeAdapter adapter = context.GetEdgeAdapter(typeId);
+			drawLine (handle1.position, handle2.position, lineColor, false, adapter.GetSourceAnchorTexture(), adapter.GetTargetAnchorTexture());
 		}
 	}
 	
-	public List<EdgeHandle> GetHandles (DiagramContext context)
+	override public DiagramHandle[] GetHandles ()
 	{
-		Rect wr = sourceAnchor.GetNode (context).rect;
-		Rect wr2 = targetAnchor.GetNode (context).rect;
-		Vector2 pointA = new Vector2 (wr.x + wr.width / 2, wr.y + wr.height / 2);
-		Vector2 pointB = new Vector2 (wr2.x + wr2.width / 2, wr2.y + wr2.height / 2);
-		sourceAnchor.position = GetAnchorPos (pointA, wr2);
-		targetAnchor.position = GetAnchorPos (pointB, wr);
-		
+		TEMP_HANDLES.Clear ();
+		TEMP_HANDLES.Add (sourceAnchor);
+		TEMP_HANDLES.AddRange (handles);
+		TEMP_HANDLES.Add (targetAnchor);
+		return TEMP_HANDLES.ToArray ();
+	}
+	
+	public EdgeHandle[] GetEdgeHandles ()
+	{
 		TEMP_HANDLES.Clear ();
 		TEMP_HANDLES.Add (sourceAnchor);
 		TEMP_HANDLES.AddRange (handles);
 		TEMP_HANDLES.Add (targetAnchor);
 		
-		return TEMP_HANDLES;
+		return TEMP_HANDLES.ToArray ();
 	}
 	
 	public DiagramElement HitTest (DiagramContext context, Vector2 position)
 	{
-		List<EdgeHandle>  handles = GetHandles ( context);
-		TEMP_POSITIONS.Clear();
-		for (int i = 0; i < handles.Count; i++) {
+		EdgeHandle[] handles = GetEdgeHandles ();
+		TEMP_POSITIONS.Clear ();
+		for (int i = 0; i < handles.Length; i++) {
 			EdgeHandle handle1 = handles [i];
-			TEMP_POSITIONS.Add(handle1.position);
+			TEMP_POSITIONS.Add (handle1.position);
 		}	
-		if(DiagramUtil.ContainsEdge(TEMP_POSITIONS , position , 4)){
-			Debug.Log(" HIT Edge !");
+		if (DiagramUtil.ContainsEdge (TEMP_POSITIONS, position, 4)) {
 			return this;
 		}
 		return null;
@@ -73,10 +162,8 @@ public class DiagramEdge : DiagramSelectableElement
 	
 	override public void DrawHandle (DiagramContext context)
 	{
-		foreach(EdgeHandle handle in GetHandles ( context)){
-			Debug.Log(" Draw Edge Handle !" + handle);
-			handle .Draw(context);
-			
+		foreach (EdgeHandle handle in GetEdgeHandles()) {
+			handle .Draw (context);
 		}
 	}
 
@@ -118,10 +205,10 @@ public class DiagramEdge : DiagramSelectableElement
 		GUI.color = savedColor;
 		
 		if (destAnchor != null) {
-			//DrawAnchor (pointB, angle, destAnchor);
+			DrawAnchor (pointB, angle, destAnchor);
 		}
 		if (srcAnchor != null) {
-			//DrawAnchor (pointA, angle + 180, srcAnchor);
+			DrawAnchor (pointA, angle + 180, srcAnchor);
 		}
 		
 		
@@ -129,9 +216,9 @@ public class DiagramEdge : DiagramSelectableElement
 		GUI.color = savedColor;
 	}
 	
-	Vector2 GetAnchorPos (Vector2 pointA, Rect wr2)
+	Vector2 GetAnchorPos (Vector2 pointA, Rect wr2, Vector2 pointB)
 	{
-		Vector2 pointB = new Vector2 (wr2.x + wr2.width / 2, wr2.y + wr2.height / 2);
+		//DiagramUtil.ExpandRect(wr2 , 10 , 10 ) ;
 		Vector2 arrowPos = new Vector2 ();
 		float left = wr2.x;
 		float right = wr2.x + wr2.width;
@@ -194,4 +281,20 @@ public class DiagramEdge : DiagramSelectableElement
 		
 	}
 	
+	void DrawAnchor (Vector2 destAnchorPos, float angle, Texture2D texAnchor)
+	{
+		Color savedColor = GUI.color;
+		Matrix4x4 savedMatrix = GUI.matrix;
+		
+		Vector2 arrowPivot = new Vector2 (destAnchorPos.x, destAnchorPos.y);
+		Vector2 arrowPoint = new Vector2 (destAnchorPos.x, destAnchorPos.y);
+		arrowPoint.x -= 16;
+		arrowPoint.y -= 8;
+		GUI.matrix = Matrix4x4.TRS (arrowPoint, Quaternion.identity, Vector3.one);
+		GUIUtility.RotateAroundPivot (angle, arrowPivot);
+		GUI.DrawTexture (new Rect (0, 0, 16, 16), texAnchor);
+		
+		GUI.matrix = savedMatrix;
+		GUI.color = savedColor;
+	}
 }
