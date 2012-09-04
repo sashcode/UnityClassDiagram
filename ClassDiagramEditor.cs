@@ -180,9 +180,7 @@ public class ClassDiagramEditor: DiagramEditorWindow
 			style.normal.background = texAdd;
 			btnRect.x += 18;
 			if (GUI.Button (btnRect, "", style)) {
-				System.Collections.Generic.List<Attribute> attrList = new System.Collections.Generic.List<Attribute> (clazz.attributes);
-				attrList.Add (new Attribute ());
-				clazz.attributes = attrList.ToArray ();	
+				clazz.attributes.Add (new Attribute ());
 			}
 			
 			style.normal.background = texRemove;
@@ -196,8 +194,8 @@ public class ClassDiagramEditor: DiagramEditorWindow
 		}
 		
 		
-		for (int index = 0; index < clazz.attributes.Length; index++) {
-			Attribute attr = (Attribute)clazz.attributes.GetValue (index);
+		for (int index = 0; index < clazz.attributes.Count; index++) {
+			Attribute attr = (Attribute)clazz.attributes[index];
 			float nwidth = 50;
 			float twidth = 90;
 			float y = 60 + 18 * index;
@@ -248,22 +246,20 @@ public class ClassDiagramEditor: DiagramEditorWindow
 				GUIStyle style = new GUIStyle (GUIStyle.none);
 				style.normal.background = texRemoveMini;
 				if (GUI.Button (new Rect (trect.x + trect.width - 4, y, 13, 16), "", style)) {
-					System.Collections.Generic.List<Attribute> attributeList = new System.Collections.Generic.List<Attribute> (clazz.attributes);
-					attributeList.Remove (attr);
-					clazz.attributes = attributeList.ToArray ();
+					clazz.attributes.Remove (attr);
 				}
 			}
 		}
 		
 		int space = 12;
-		if (0 < clazz.attributes.Length) {
+		if (0 < clazz.attributes.Count) {
 			space = 20;
 		}
 		
-		if (clazz.rect.height - boxRect.y - space < clazz.attributes.Length * 18 + iconRect.height) {
-			clazz.rect.height = boxRect.y + clazz.attributes.Length * 18 + iconRect.height + space;
-		} else if (0 < (clazz.rect.height - boxRect.y - space) - (clazz.attributes.Length * 18 + iconRect.height)) {
-			clazz.rect.height = clazz.attributes.Length * 18 + iconRect.height + boxRect.y + space;
+		if (clazz.rect.height - boxRect.y - space < clazz.attributes.Count * 18 + iconRect.height) {
+			clazz.rect.height = boxRect.y + clazz.attributes.Count * 18 + iconRect.height + space;
+		} else if (0 < (clazz.rect.height - boxRect.y - space) - (clazz.attributes.Count * 18 + iconRect.height)) {
+			clazz.rect.height = clazz.attributes.Count * 18 + iconRect.height + boxRect.y + space;
 		}
 		
 		

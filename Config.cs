@@ -14,7 +14,9 @@ public class Config
 	public const int EDGE_TYPE_COMPOSITE = 2;
 	
 	//NODE TYPE
-	public static int NODE_TYPE_CLASS = 0;
+	public const int NODE_TYPE_CLASS = 0;
+	
+	public static string[] types = new string[]{"int", "float", "string", "bool", "Color", "Vector2", "Vector3", "Vector4", "AnimationCurve","Rect", "Texture", "Texture2D", "Object"};
 	
 	
 	//TEXTURE

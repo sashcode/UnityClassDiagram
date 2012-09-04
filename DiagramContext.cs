@@ -38,6 +38,15 @@ public class DiagramContext
 		return null;
 	}
 	
+	public NodeAdapter GetNodeAdapter (int typeId)
+	{
+		switch (typeId) {
+		case Config.NODE_TYPE_CLASS:
+			return new ClassNodeAdapter();
+		}
+		return null;
+	}
+	
 	public DiagramSelection GetSelection ()
 	{
 		

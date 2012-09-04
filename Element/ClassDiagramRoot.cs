@@ -8,9 +8,12 @@ public class ClassDiagramRoot : DiagramRoot
 	
 	public ClassDiagramRoot ()
 	{
-		ClassNode node1 = new ClassNode ();
-		ClassNode node2 = new ClassNode ();
-		ClassNode node3 = new ClassNode ();
+		DiagramNode node1 = new DiagramNode ();
+		node1.attributes.Add(new Attribute());
+		node1.attributes.Add(new Attribute());
+		node1.attributes.Add(new Attribute());
+		DiagramNode node2 = new DiagramNode ();
+		DiagramNode node3 = new DiagramNode ();
 		DiagramEdge edge1 = new DiagramEdge ();
 		
 		edge1.SetSource(node1);
@@ -32,7 +35,7 @@ public class ClassDiagramRoot : DiagramRoot
 	{
 		for (int index = 0; index < classes.Length; index++) {
 			ClassNode clazz = (ClassNode)classes.GetValue (index);
-			if (clazz.id != null && 0 < clazz.id.Length && clazz.id == classId) {
+			if (clazz.uuid != null && 0 < clazz.uuid.Length && clazz.uuid == classId) {
 				return clazz;
 			}
 		}

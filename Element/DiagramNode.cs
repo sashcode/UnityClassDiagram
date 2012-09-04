@@ -8,6 +8,10 @@ public class DiagramNode:DiagramSelectableElement
 	public int typeId = Config.NODE_TYPE_CLASS;
 	
 	public List<Attribute> attributes = new List<Attribute>();
+	public string name = "class name";
+	public string iconPath;
+	public Texture2D texIcon ;
+	public GUIStyle iconStyle = new GUIStyle (GUIStyle.none);
 	
 	public Rect rect = new Rect (50, 100, 180, 30);
 	[System.NonSerialized]

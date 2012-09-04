@@ -15,6 +15,10 @@ public class DiagramUtil
 		return new Rect (rect.x - dw / 2, rect.y - dh / 2, rect.width + dw, rect.height + dh);
 	}
 	
+	public static Rect TranslateRect(Rect rect, float dx, float dy){
+		return new Rect (rect.x + dx, rect.y + dy, rect.width, rect.height);
+	}
+	
 	public static Rect UnionRect (Rect rect, float x1, float y1)
 	{
 		if (x1 < rect.x) {
