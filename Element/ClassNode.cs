@@ -1,15 +1,44 @@
 using UnityEngine;
 using System.Collections;
 
-public class ClassNode : MonoBehaviour {
 
-	// Use this for initialization
-	void Start () {
+[System.Serializable]
+public class ClassNode : DiagramNode
+{
+	public string name;
+	public string id;
+	public string iconPath;
+	public Attribute[] attributes = new Attribute[0];
+	public  CompositeEdge[] compositeReferences = new  CompositeEdge[0];
+	public ReferenceEdge[] references = new ReferenceEdge[0];
+	public GeneralizationEdge[] generalizations = new GeneralizationEdge[0];
 	
+	public string superClassName = null;
+
+	public ClassNode ()
+	{
+		name = "class name";
+		id = System.Guid.NewGuid ().ToString ("N");
 	}
-	
-	// Update is called once per frame
-	void Update () {
-	
+
+	public ClassNode GetSuperClassNode (ClassDiagramRoot data)
+	{
+		for (int index = 0; index < data.classes.Length; index++) {
+			ClassNode clazz = (ClassNode)data.classes.GetValue (index);
+			if (clazz.name != null && 0 < clazz.name.Length && clazz.name == superClassName) {
+				return clazz;
+			}
+		}
+		return null;
 	}
+}
+	
+
+
+[System.Serializable]
+public class Attribute
+{
+	public string name = "name";
+	public string type = "int";
+	public string iconPath;
 }
