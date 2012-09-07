@@ -45,6 +45,10 @@ public class DiagramNode:DiagramSelectableElement
 		if(rect.Contains(position)){
 			return this;
 		}
+		NodeAdapter adapter = context.GetNodeAdapter(typeId);
+		if(adapter.HitTest(this , context , position)){
+			return this;
+		}
 		return null;
 	}
 	

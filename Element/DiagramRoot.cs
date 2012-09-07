@@ -6,11 +6,10 @@ public class DiagramRoot : MonoBehaviour  , DiagramElement{
 	public string diagramName;
 	public Rect diagramNameRect = new Rect (10, 10, 200, 20);
 	
-	
 	public List<DiagramNode> nodes = new List<DiagramNode> ();
 	public string[] types ;
 		
-	public void Draw(DiagramContext context){
+	virtual public void Draw(DiagramContext context){
 
 		diagramName = GUI.TextField (diagramNameRect, diagramName);
 		

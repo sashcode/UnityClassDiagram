@@ -5,8 +5,21 @@ using System.Collections.Generic;
 public class ClassNodeAdapter : NodeAdapter {
 	
 	private static Rect iconRect = new Rect (6, 6, 32, 32);
+	private static Rect addAttributeToolRect = new Rect (6, -16, 16, 16);
 	private static Rect TEMP = new Rect ();
 	
+	
+	override public bool HitTest (DiagramNode node , DiagramContext context , Vector2 position)
+	{
+		bool selected = context.GetSelection().GetElements().Contains(node);
+		if(selected){
+		TEMP =  DiagramUtil.TranslateRect(addAttributeToolRect , node.rect.x , node.rect.y );
+			if(TEMP.Contains(position)){
+				return true;
+			}
+		}
+		return false;
+	}
 	override public void DrawNode (DiagramNode node ,DiagramContext context)
 	{
 		
@@ -15,6 +28,22 @@ public class ClassNodeAdapter : NodeAdapter {
 		
 		
 		
+		if(selected){
+			
+			
+			GUIStyle style = new GUIStyle (GUIStyle.none);
+			style.normal.background = Config.TEX_ADD;
+			
+			TEMP =  DiagramUtil.TranslateRect(addAttributeToolRect , node.rect.x , node.rect.y );
+			if (GUI.Button (TEMP, "", style)) {
+				context.GetCommand().AddAttribute(node);
+			}
+			
+			
+			
+			
+			
+		}
 		
 		
 		

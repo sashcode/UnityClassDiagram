@@ -5,12 +5,19 @@ public class DiagramContext
 {
 
 	public DiagramEditorWindow editor;
+	[System.NonSerialized]
+	 public DiagramCommand command ;
 	private DiagramSelection selection = new DiagramSelection ();
 	
 	public DiagramContext (DiagramEditorWindow editorWindow)
 	{
 		editor = editorWindow;
+		command = new DiagramCommand(this);
 		
+	}
+	
+	public DiagramCommand GetCommand(){
+		return command;
 	}
 
 	public DiagramNode FindNode (string id)
@@ -105,20 +112,26 @@ public class DiagramSelection
 
 	public List<DiagramElement> GetElements ()
 	{
-		return elements;
+		return new List<DiagramElement> (elements);
 	}
 
+	public List<DiagramElement> RemoveElement (DiagramElement element)
+	{
+		elements.Remove (element);
+		return GetElements ();
+	}
+	
 	public List<DiagramElement> SetElement (DiagramElement element)
 	{
 		elements.Clear ();
 		elements.Add (element);
-		return elements;
+		return GetElements ();
 	}
 
 	public List<DiagramElement> AddElement (DiagramElement element)
 	{
 		elements.Add (element);
-		return elements;
+		return GetElements ();
 	}
 	
 }

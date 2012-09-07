@@ -58,18 +58,29 @@ public abstract class DiagramEditorWindow : EditorWindow
 		
 		
 		if (currentDiagramTool.OnGUI (diagramContext)) {
-			
+			//Update Anchors  position
 			foreach (DiagramNode node in currentDiagramRoot.nodes) {
 				foreach (DiagramEdge edge in node.edges) {
 					edge.UpdateAnchor (diagramContext);
 				}
 			}
-
+			
+			// Draw DiagramRoot and children
 			currentDiagramRoot.Draw (diagramContext);
+			
+			
+			//Draw Selected Element handles
 			List<DiagramElement> elements = diagramContext.GetSelection ().GetElements ();
 			foreach (DiagramElement elm in elements) {
 				elm.DrawHandle (diagramContext);
 			}
+			
+			//Draw Tools
+			
+			
+			
+
+			
 		}
 		
 		//OnGUIimpl();

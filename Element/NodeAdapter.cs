@@ -7,4 +7,9 @@ public class NodeAdapter
 	{
 		
 	}
+	
+	virtual public bool HitTest (DiagramNode node , DiagramContext context , Vector2 position)
+	{
+		return false;
+	}
 }

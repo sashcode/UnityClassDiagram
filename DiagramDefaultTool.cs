@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEditor;
 using System.Collections;
 
 public class DiagramDefaultTool : DiagramTool
@@ -23,13 +24,29 @@ public class DiagramDefaultTool : DiagramTool
 			}
 		case EventType.KeyUp:
 			{
-				log ("key up");
+			 
+				log ("key up typecode= " + e.keyCode);
+			if(e.keyCode == KeyCode.Delete || e.keyCode == KeyCode.Backspace){
+				foreach(DiagramElement element in  context.GetSelection().GetElements()){
+					if(element is DiagramNode){
+						context.GetCommand().DeleteNode((DiagramNode)element);
+					}
+				}
+			}
+			context.editor.Repaint ();
+			
+			
 				
 				break;
 			}
 		case EventType.ContextClick:
 			{
 				log ("ContextClick");
+						//Draw Context menu
+			log ("ContextClick");
+			
+			GenericMenu menu = new GenericMenu();
+			//menu.AddItem( new GUIContent("item1") , true , this.Action ,"item1");
 				break;
 			}
 		case EventType.DragExited:
@@ -123,6 +140,11 @@ public class DiagramDefaultTool : DiagramTool
 		
 		//currentDiagramRoot.OnGUI();	
 	}
+	
+	public void Action(Object  obj){
+		
+	}
+	
 	
 	public virtual void Select (DiagramContext context, Vector2 position)
 	{

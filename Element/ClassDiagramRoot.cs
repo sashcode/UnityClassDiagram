@@ -4,6 +4,10 @@ using System.Collections;
 [System.Serializable]
 public class ClassDiagramRoot : DiagramRoot
 {
+	public Rect buttonRect = new Rect (10, 30, 20, 20);
+	public GUIStyle iconStyle = new GUIStyle (GUIStyle.none);
+
+	
 	public ClassNode[] classes;
 	
 	public ClassDiagramRoot ()
@@ -40,5 +44,15 @@ public class ClassDiagramRoot : DiagramRoot
 			}
 		}
 		return null;
+	}
+	
+	override public void Draw(DiagramContext context ){
+		iconStyle.normal.background = Config.TEX_TOOL_COMPOSITE;
+		iconStyle.active.background = Config.TEX_TOOL_REFERENCE;
+		if (GUI.Button (buttonRect, "", iconStyle)) {
+			context.GetCommand().AddNode();
+		}
+		base.Draw(context);
+	
 	}
 }
