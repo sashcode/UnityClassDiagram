@@ -52,6 +52,10 @@ public abstract class DiagramEditorWindow : EditorWindow
 			GUI.Label (new Rect (20, 20, 300, 100), msg);
 			return;
 		}
+		
+		//Diagram Tool
+		currentDiagramTool = currentDiagramRoot.GetTool(diagramContext);
+		
 		if (currentDiagramTool == null) {
 			currentDiagramTool = new DiagramDefaultTool ();
 		}

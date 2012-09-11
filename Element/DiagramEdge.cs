@@ -77,8 +77,8 @@ public class DiagramEdge : DiagramSelectableElement
 			}
 		}
 		
-		Debug.Log(" source anchor = " + sourceAnchor.relativePosition);
-		Debug.Log(" target anchor = " + targetAnchor.relativePosition);
+		Log(" source anchor = " + sourceAnchor.relativePosition);
+		Log(" target anchor = " + targetAnchor.relativePosition);
 		if (source || target) {
 			if (source && target) {
 				pointA = new Vector2 (sourceRect.x + sourceRect.width * sourceAnchor.relativePosition.x, sourceRect.y + sourceRect.height * sourceAnchor.relativePosition.y);
@@ -92,27 +92,27 @@ public class DiagramEdge : DiagramSelectableElement
 				sourceAnchor.position = GetAnchorPos (pointB, sourceRect, pointA);
 				targetAnchor.position = GetAnchorPos (pointA, targetRect, pointB);	
 			} else if (source && !target) {
-				Debug.Log(" source ");
+				Log(" source ");
 				sourceAnchor.position = GetAnchorPos (pointB, sourceRect, pointA);
 			} else if (!source && target) {
-				Debug.Log(" target ");
+				Log(" target ");
 				targetAnchor.position = GetAnchorPos (pointA, targetRect, pointB);	
 			}	
 		}
 		if(!sourceRect.Contains(pointA)){
-			Debug.LogError(" source Error pointA ! ");
+			LogError(" source Error pointA ! ");
 		}
 		if(!sourceRect.Contains(sourceAnchor.position)){
-			Debug.LogError(" source Error ! ");
+			LogError(" source Error ! ");
 		}
 		if(!targetRect.Contains(targetAnchor.position)){
-			Debug.LogError(" target Error ! ");
+			LogError(" target Error ! ");
 		}
 		
-		Debug.Log(" source anchor = " + sourceAnchor.position + "  sourceRect = "  + sourceRect);
-		Debug.Log("  pointA = " + pointA + " " + sourceRect.Contains(pointA));
-		Debug.Log(" target anchor = " + targetAnchor.position + "  targetRect = "  + targetRect);
-		Debug.Log("  pointB = " + pointB + " " + targetRect.Contains(pointB));
+		Log(" source anchor = " + sourceAnchor.position + "  sourceRect = "  + sourceRect);
+		Log("  pointA = " + pointA + " " + sourceRect.Contains(pointA));
+		Log(" target anchor = " + targetAnchor.position + "  targetRect = "  + targetRect);
+		Log("  pointB = " + pointB + " " + targetRect.Contains(pointB));
 		
 	}
 	
@@ -190,7 +190,7 @@ public class DiagramEdge : DiagramSelectableElement
 		
 		
 		float angle = Vector3.Angle (pointB - pointA, Vector2.right) * (pointA.y <= pointB.y ? 1 : -1);
-		//Debug.Log (" a=" + pointA + " b=" + pointB + " A=" + angle);
+		//Log (" a=" + pointA + " b=" + pointB + " A=" + angle);
 		
 		float dx = pointB.x - pointA.x;
 		float dy = pointB.y - pointA.y;
@@ -235,7 +235,7 @@ public class DiagramEdge : DiagramSelectableElement
 		
 		
 		if (0 <= ans1 && 0 <= ans2) {
-			//Debug.Log("bottom");
+			//Log("bottom");
 			float w1 = Mathf.Abs (pointB.y - pointA.y);
 			float w2 = Mathf.Abs (pointB.y - bottom);
 			float h1 = pointB.x - pointA.x;
@@ -243,7 +243,7 @@ public class DiagramEdge : DiagramSelectableElement
 			arrowPos.y = bottom;
 			arrowPos.x = pointB.x - h2;			
 		} else if (0 > ans1 && 0 <= ans2) {
-			//Debug.Log("right");
+			//Log("right");
 			float w1 = Mathf.Abs (pointB.x - pointA.x);
 			float w2 = Mathf.Abs (pointB.x - right);
 			float h1 = pointB.y - pointA.y;
@@ -251,7 +251,7 @@ public class DiagramEdge : DiagramSelectableElement
 			arrowPos.x = right;
 			arrowPos.y = pointB.y - h2;
 		} else if (0 <= ans1 && 0 > ans2) {
-			//Debug.Log("left");
+			//Log("left");
 			float w1 = Mathf.Abs (pointB.x - pointA.x);
 			float w2 = Mathf.Abs (pointB.x - left);
 			float h1 = pointB.y - pointA.y;
@@ -259,7 +259,7 @@ public class DiagramEdge : DiagramSelectableElement
 			arrowPos.x = left;
 			arrowPos.y = pointB.y - h2;
 		} else if (0 > ans1 && 0 > ans2) {
-			//Debug.Log("top");
+			//Log("top");
 			float w1 = Mathf.Abs (pointB.y - pointA.y);
 			float w2 = Mathf.Abs (pointB.y - top);
 			float h1 = pointB.x - pointA.x;
@@ -296,5 +296,12 @@ public class DiagramEdge : DiagramSelectableElement
 		
 		GUI.matrix = savedMatrix;
 		GUI.color = savedColor;
+	}
+	
+	public void LogError(string text){
+		//Debug.LogError(text);
+	}
+	public void Log(string text){
+		//Debug.Log(text);
 	}
 }

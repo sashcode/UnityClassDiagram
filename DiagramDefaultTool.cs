@@ -8,7 +8,7 @@ public class DiagramDefaultTool : DiagramTool
 
 	public void log (string text)
 	{
-		Debug.Log (text);
+		//Debug.Log (text);
 	}
 	
 	public override bool OnGUI (DiagramContext context)
